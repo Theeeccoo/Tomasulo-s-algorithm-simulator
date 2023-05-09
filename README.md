@@ -21,5 +21,5 @@ To prevent stalls because of the "false" dependencies, Tomasulo's algorithm allo
 Creators:
 * Foo 
 * Bar
-* Barz
+* João Augusto dos Santos Silva
 * Thiago de Campos Ribeiro Nolasco
