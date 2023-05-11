@@ -9,31 +9,6 @@
 
 // TODO Create a function to free all pointers that we are allocating
 
-void initializer(){
-	char	**instructions = readInstructions();		
-	int	aux = 0;
-
-	for( ; *foo[0] != '\0' ; foo++ ){
-		printf("%s\n", *foo);
-		aux++;
-	}
-	foo -= aux;
-	
-	printf("\n\n");
-	char	**barz = splitInstruction(foo[0]);
-
-	printf("\n\n");
-	aux = 0;
-	for( ; *barz[0] != '\0'; barz++ ) {
-		printf("%s\n", *barz);
-		aux++;
-	}
-	barz -= aux;
-	
-}
-
-
-
 
   /*=====================================*/
  /*       INSTRUCTION PREPARATION       */
@@ -147,7 +122,28 @@ char** readInstructions(char *file_path){
 	return file_inputs;
 }
 
+void initializer(char* filename){
+	char	**instructions = readInstructions(filename);		
+	int	aux = 0;
 
+	for( ; *instructions[0] != '\0' ; instructions++ ){
+		printf("%s\n", *instructions);
+		aux++;
+	}
+	instructions -= aux;
+	
+	printf("\n\n");
+	char	**barz = splitInstruction(instructions[0]);
+
+	printf("\n\n");
+	aux = 0;
+	for( ; *barz[0] != '\0'; barz++ ) {
+		printf("%s\n", *barz);
+		aux++;
+	}
+	barz -= aux;
+	
+}
 
 int main(void){
 	initializer("input.txt");
