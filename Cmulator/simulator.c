@@ -32,7 +32,7 @@ void cleaningInstruction(char **instruction){
 	printf("Entrei\n");
 	for( ; *instruction[0] != '\0' ; instruction++, i++ ){
 		//printf("%c\n", *instruction[strlen(*instruction) -1]);
-		printf("%s\n", *instruction); 
+		//printf("%s\n", *instruction); 
 	}
 }
 
@@ -50,7 +50,7 @@ char** splitInstruction(char *instruction){
 	// Setting size the max size here as 4
 	// but later we need to check if there's any instruction that needs more space ADD R1, R2, R3
 	char	**splitted_string = (char**) malloc(( 5 * (sizeof(char*)) ));
-	char	delimiter[1] = " ";
+    char	*delimiter = " ,";
 	char	*token;
 	int	aux = 0;
 
@@ -58,7 +58,7 @@ char** splitInstruction(char *instruction){
 	while( token != NULL ) {
 		*splitted_string = (char*) malloc( 10 * sizeof(char) );
 		strcpy(*splitted_string, token); 
-		printf("%c\t", *splitted_string[1]);
+		printf("%s\t", *splitted_string);
 		splitted_string++;
 		aux++;
 		token = strtok(NULL, delimiter);
@@ -66,7 +66,6 @@ char** splitInstruction(char *instruction){
 
 	*splitted_string = (char*) malloc( sizeof(char) );
 	strcpy(*splitted_string, "\0");
-	
 	
 
 	splitted_string -= aux;
@@ -116,7 +115,7 @@ int numberOfLines(char *file_path){
  * @returns All read lines
  */
 char** readInstructions(char *file_path){
-	char	**file_inputs;
+	char	**file_inputs = NULL;
 	int	number_of_lines;
 	FILE	*file_pointer;
 
@@ -136,7 +135,7 @@ char** readInstructions(char *file_path){
 			line_size = strlen(file_inputs[i]);
 			file_inputs[i][line_size - 1] = '\0';
 
-			printf("%s\n", file_inputs[i]);
+			//printf("%s\n", file_inputs[i]);
 		
 		}
 
@@ -162,12 +161,13 @@ int main(void){
 	}
 	foo -= aux;
 	
+    printf("%s\n\n", *foo);
 	char	**barz = splitInstruction(foo[0]);
 
 	printf("\n\n");
 	aux = 0;
 	for( ; *barz[0] != '\0'; barz++ ) {
-	        printf("%s\n", *barz);
+	    printf("%s\n", *barz);
 		aux++;
 	}
 
