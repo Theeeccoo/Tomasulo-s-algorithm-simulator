@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "reorder_buffer.h"
 
 /** DEFINITIONS **/
 #define MAX_SIZE 20
 
 
-
 // TODO Create a function to free all pointers that we are allocating
-
 
   /*=====================================*/
  /*       INSTRUCTION PREPARATION       */
@@ -126,6 +125,8 @@ void initializer(char* filename){
 	char	**instructions = readInstructions(filename);		
 	int	aux = 0;
 
+	Reorder_Buffer *rb = reorderBufferInitializer();
+
 	for( ; *instructions[0] != '\0' ; instructions++ ){
 		printf("%s\n", *instructions);
 		aux++;
@@ -134,15 +135,11 @@ void initializer(char* filename){
 	
 	printf("\n\n");
 	char	**barz = splitInstruction(instructions[0]);
+	insertInstruction(barz, rb);
+	barz = splitInstruction(instructions[1]);
+	insertInstruction(barz, rb);
 
-	printf("\n\n");
-	aux = 0;
-	for( ; *barz[0] != '\0'; barz++ ) {
-		printf("%s\n", *barz);
-		aux++;
-	}
-	barz -= aux;
-	
+	printReorderBuffer(rb);
 }
 
 int main(void){
