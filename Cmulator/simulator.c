@@ -5,17 +5,32 @@
 /** DEFINITIONS **/
 #define MAX_SIZE 20
 
+
+
 // TODO Create a function to free all pointers that we are allocating
 
+void initializer(){
+	char	**instructions = readInstructions();		
+	int	aux = 0;
 
+	for( ; *foo[0] != '\0' ; foo++ ){
+		printf("%s\n", *foo);
+		aux++;
+	}
+	foo -= aux;
+	
+	printf("\n\n");
+	char	**barz = splitInstruction(foo[0]);
 
-
-
-
-
-
-
-
+	printf("\n\n");
+	aux = 0;
+	for( ; *barz[0] != '\0'; barz++ ) {
+		printf("%s\n", *barz);
+		aux++;
+	}
+	barz -= aux;
+	
+}
 
 
 
@@ -23,19 +38,6 @@
   /*=====================================*/
  /*       INSTRUCTION PREPARATION       */
 /*=====================================*/
-
-
-
-
-void cleaningInstruction(char **instruction){
-	int	i = 0;
-	printf("Entrei\n");
-	for( ; *instruction[0] != '\0' ; instruction++, i++ ){
-		//printf("%c\n", *instruction[strlen(*instruction) -1]);
-		//printf("%s\n", *instruction); 
-	}
-}
-
 
 /**
  * @brief Splits a instruction into pieces containing operation and operators
@@ -50,7 +52,7 @@ char** splitInstruction(char *instruction){
 	// Setting size the max size here as 4
 	// but later we need to check if there's any instruction that needs more space ADD R1, R2, R3
 	char	**splitted_string = (char**) malloc(( 5 * (sizeof(char*)) ));
-    char	*delimiter = " ,";
+        char	*delimiter = " ,";
 	char	*token;
 	int	aux = 0;
 
@@ -134,9 +136,6 @@ char** readInstructions(char *file_path){
 			// Removing '\n' at the end of line read by fgets
 			line_size = strlen(file_inputs[i]);
 			file_inputs[i][line_size - 1] = '\0';
-
-			//printf("%s\n", file_inputs[i]);
-		
 		}
 
 
@@ -151,36 +150,6 @@ char** readInstructions(char *file_path){
 
 
 int main(void){
-	char	**foo = readInstructions("input.txt");
-	int	aux = 0;
-	printf("\n\n");
-
-	for( ; *foo[0] != '\0' ; foo++ ){
-		printf("%s\n", *foo);
-		aux++;
-	}
-	foo -= aux;
-	
-    printf("%s\n\n", *foo);
-	char	**barz = splitInstruction(foo[0]);
-
-	printf("\n\n");
-	aux = 0;
-	for( ; *barz[0] != '\0'; barz++ ) {
-	    printf("%s\n", *barz);
-		aux++;
-	}
-
-
-	printf("\n\n");
-	barz -= aux;
-	cleaningInstruction(barz);
-	//barz = cleaningInstruction(barz);
-	printf("\n\n");
-	for( ; *barz[0] != '\0'; barz++ ) {
-		printf("%s\n", *barz);
-	}
-	
-	
+	initializer("input.txt");
 	return 0;
 }
