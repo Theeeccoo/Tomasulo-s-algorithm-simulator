@@ -7,6 +7,36 @@
 
 // TODO Create a function to free all pointers that we are allocating
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*=====================================*/
+ /*       INSTRUCTION PREPARATION       */
+/*=====================================*/
+
+
+
+
+void cleaningInstruction(char **instruction){
+	int	i = 0;
+	printf("Entrei\n");
+	for( ; *instruction[0] != '\0' ; instruction++, i++ ){
+		//printf("%c\n", *instruction[strlen(*instruction) -1]);
+		printf("%s\n", *instruction); 
+	}
+}
+
+
 /**
  * @brief Splits a instruction into pieces containing operation and operators
  *
@@ -18,7 +48,7 @@
 
 char** splitInstruction(char *instruction){
 	// Setting size the max size here as 4
-	// but later we need to check if there's any instruction that needs more space
+	// but later we need to check if there's any instruction that needs more space ADD R1, R2, R3
 	char	**splitted_string = (char**) malloc(( 5 * (sizeof(char*)) ));
 	char	delimiter[1] = " ";
 	char	*token;
@@ -28,6 +58,7 @@ char** splitInstruction(char *instruction){
 	while( token != NULL ) {
 		*splitted_string = (char*) malloc( 10 * sizeof(char) );
 		strcpy(*splitted_string, token); 
+		printf("%c\t", *splitted_string[1]);
 		splitted_string++;
 		aux++;
 		token = strtok(NULL, delimiter);
@@ -35,7 +66,7 @@ char** splitInstruction(char *instruction){
 
 	*splitted_string = (char*) malloc( sizeof(char) );
 	strcpy(*splitted_string, "\0");
-		
+	
 	
 
 	splitted_string -= aux;
@@ -79,7 +110,8 @@ int numberOfLines(char *file_path){
  *
  * @param path to file
  *
- * @details Opens a new file (based on path given), iterate through all lines and save read content into a new "string". It's done in a dinamic way (doesn't matter the size of the file; thanks to the function above it'll all be read).
+ * @details Opens a new file (based on path given), iterate through all lines and save read content into a new "string".
+ * It's done in a dinamic way (doesn't matter the size of the file; thanks to the function above it'll all be read).
  *
  * @returns All read lines
  */
@@ -109,7 +141,7 @@ char** readInstructions(char *file_path){
 		}
 
 
-		// Creating an "empty string" as a controller (helps to here the instructions ended).
+		// Creating an "empty string" as a controller (helps to know where the instructions ended).
 		file_inputs[number_of_lines] = (char *) malloc(sizeof(char));
 		strcpy(file_inputs[number_of_lines], "\0");
 	}	
@@ -117,14 +149,13 @@ char** readInstructions(char *file_path){
 	return file_inputs;
 }
 
+
+
 int main(void){
 	char	**foo = readInstructions("input.txt");
 	int	aux = 0;
-	/*int	size = numberOfLines("input.txt"),
-		i = 0;*/
-	printf("\n\n\n\n");
+	printf("\n\n");
 
-	// Would be better to find a way to make this works, otherwise we'll need to reopen the file...
 	for( ; *foo[0] != '\0' ; foo++ ){
 		printf("%s\n", *foo);
 		aux++;
@@ -133,10 +164,23 @@ int main(void){
 	
 	char	**barz = splitInstruction(foo[0]);
 
-	printf("\n\n\n\n");
+	printf("\n\n");
+	aux = 0;
 	for( ; *barz[0] != '\0'; barz++ ) {
-	       printf("%s\n", *barz);
+	        printf("%s\n", *barz);
+		aux++;
 	}
+
+
+	printf("\n\n");
+	barz -= aux;
+	cleaningInstruction(barz);
+	//barz = cleaningInstruction(barz);
+	printf("\n\n");
+	for( ; *barz[0] != '\0'; barz++ ) {
+		printf("%s\n", *barz);
+	}
+	
 	
 	return 0;
 }
