@@ -11,10 +11,10 @@ To prevent stalls caused by false dependencies, Tomasulo's algorithm incorporate
 
 ## Creators
 <ul>
-    <li> Cecilia Capurucho Bouchardet</li>
-    <li> Danielle Dias Vieira</li>
-    <li> João Augusto dos Santos Silva</li>
-    <li> Thiago de Campos Ribeiro Nolasco</li>
+    <li> [Cecilia Capurucho Bouchardet](https://github.com/cecibou)</li>
+    <li> [Danielle Dias Vieira](https://github.com/DanielleDVieira)</li>
+    <li> [João Augusto dos Santos Silva](https://github.com/joaoaugustoss)</li>
+    <li> [Thiago de Campos Ribeiro Nolasco](https://github.com/Theeeccoo)</li>
 </ul>
 
 ## Features
@@ -26,7 +26,7 @@ To prevent stalls caused by false dependencies, Tomasulo's algorithm incorporate
 
 ## Installation
 <ol>
-    <li> Clone the repository: `git clone https://github.com/your/repository.git`</li>
+    <li> Clone the repository: `git clone https://github.com/Theeeccoo/Tomasulo-s-algorithm-simulator.git`</li>
     <li> Navigate to the project directory: `cd Tomasulo-s-algorithm-simulator`</li>
     <li> Install the required dependencies: `sudo bash build`</li>
 </ol>
