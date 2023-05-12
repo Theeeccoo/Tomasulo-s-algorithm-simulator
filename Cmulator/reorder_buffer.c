@@ -15,7 +15,6 @@ Reorder_Buffer* reorderBufferInitializer(){
 	return rb;
 }
 
-
 /**
  * @brief Inserting new instruction into our reorder buffer
  *
@@ -79,4 +78,32 @@ void printReorderBuffer(Reorder_Buffer *rb){
 		printf("Values: %s\n", rb->line[i].instruction_result);
 		printf("\n");
 	}
+}
+
+/**
+ * @brief Freeing memory allocated to reorder buffer
+ * 
+ * @return NULL if reorder buffer is free, reorder buffer otherwise
+ *
+ * @details One should free memory using free() function to avoid memory leaks
+ *
+ */
+Reorder_Buffer* freesReorderBuffer(Reorder_Buffer *rb) {
+	int i = 0;
+    if (rb == NULL)
+		printf("** Error: Invalid reorder buffer!**\n");
+        return (NULL);
+    if (MAX_LINES < 1)
+    {
+        printf("** Error: Invalid MAX_LINES!**\n");
+        return (rb);
+    }
+    for (i = 0; i < MAX_LINES; i++) {
+		free(rb->line[i].instruction);
+		free(rb->line[i].instruction_destination);
+		free(rb->line[i].instruction_result);
+	}
+		
+    free(rb);        /* Frees the reorder buffer */
+    return (NULL);
 }
