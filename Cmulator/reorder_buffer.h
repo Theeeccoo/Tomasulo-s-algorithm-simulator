@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "instructions.h"
 
 #define BOOL	 	int
 #define TRUE	 	1
@@ -82,7 +83,7 @@
  */
 /**@{*/
 extern Reorder_Buffer* reorderBufferInitializer();
-extern int insertInstruction(char**, Reorder_Buffer*);
+extern int insertInstruction(Instruction*, Reorder_Buffer*);
 extern void printReorderBuffer(Reorder_Buffer*);
 extern Reorder_Buffer* freesReorderBuffer(Reorder_Buffer*);
 /**@}*/

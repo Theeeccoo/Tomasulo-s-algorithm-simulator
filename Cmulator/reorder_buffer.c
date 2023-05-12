@@ -1,4 +1,5 @@
 #include "reorder_buffer.h"
+#include "instructions.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -18,7 +19,7 @@ Reorder_Buffer* reorderBufferInitializer(){
 /**
  * @brief Inserting new instruction into our reorder buffer
  *
- * @param splitted instruction to be added
+ * @param instruction to be added
  * @param reorder buffer to add the instruction
  *
  * @details Receives a new instruction and insert it into
@@ -30,26 +31,23 @@ Reorder_Buffer* reorderBufferInitializer(){
  * @return If it's possible to add a new instruction, returns position where it was inserted.
  * If there's no free room, returns -1.
  */
-int insertInstruction(char **splitted_instruction, Reorder_Buffer *rb){
+int insertInstruction(Instruction *instruction, Reorder_Buffer *rb){
 	if ( rb->filled_lines > MAX_LINES ) return -1;
 	int	position = rb->filled_lines;
 
 	rb->line[position].instruction_execution = NOT_BUSY;
 	
-	rb->line[position].instruction = (char*) malloc( SIZE_STR * sizeof(char) ); 
-	/* 
-	 * TODO: How to insert the right instruction here? Received instruction is the splitted one
-	 * to fill the "instruction_destination" field.
-	 *
-	 * > Maybe create a struct to the instruction? <
-	 */
-	rb->line[position].instruction = "Arroz\0";
+	//rb->line[position].instruction = (char*) malloc( SIZE_STR * sizeof(char) ); 
+	//rb->line[position].instruction = "Arroz\0";
+	printf("FOO: %s", instruction->full_instruction);
+	rb->line[position].instruction = instruction->full_instruction;
 
 	rb->line[position].instruction_state = WAITING;
 
-	rb->line[position].instruction_destination = (char*) malloc( 3 * sizeof(char) );
-	strcpy(rb->line[position].instruction_destination, splitted_instruction[1]);
-	rb->line[position].instruction_destination[2] = '\0';
+	//rb->line[position].instruction_destination = (char*) malloc( 3 * sizeof(char) );
+	//strcpy(rb->line[position].instruction_destination, instruction->splitted_instruction[1]);
+	rb->line[position].instruction_destination = instruction->splitted_instruction[1];
+	//rb->line[position].instruction_destination[2] = '\0';
 
 	rb->line[position].instruction_result = (char*) malloc( SIZE_STR * sizeof(char) );
 	strcpy(rb->line[position].instruction_result, "NOT CALCULATED YET\0");
