@@ -3,6 +3,7 @@
 #include <string.h>
 #include "reorder_buffer.h"
 #include "instructions.h"
+#include "reservation_station.h"
 
 /** DEFINITIONS **/
 #define MAX_SIZE 20
@@ -39,11 +40,21 @@ char ** freeCharacterMatrix(char **matrix, int size)
 void initializer(char* filename){
 	Reorder_Buffer *rb = reorderBufferInitializer();
 	Instruction *instruction = instructionsInitializer(filename);
-	
-	insertInstruction(&instruction[0], rb);
-	insertInstruction(&instruction[1], rb);
+	Reservation_Station *rs = reservationStationInitializer();
+
+	insertInstructionRB(&instruction[0], rb);
+	insertInstructionRB(&instruction[1], rb);
+
+	instruction[0].type = LOAD;
+	instruction[1].type = ADD;
 
 	printReorderBuffer(rb);
+
+	insertInstructionRS(&instruction[0], rs);
+	insertInstructionRS(&instruction[1], rs);
+
+	printReservationStation(rs);
+	// TODO- Remember to decode the instruction and put its type as defined in instructions.h
 
 	// Frees pointers
 	/*if (freeCharacterMatrix(barz, 5) == NULL) {

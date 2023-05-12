@@ -83,7 +83,7 @@
  */
 /**@{*/
 extern Reorder_Buffer* reorderBufferInitializer();
-extern int insertInstruction(Instruction*, Reorder_Buffer*);
+extern int insertInstructionRB(Instruction*, Reorder_Buffer*);
 extern void printReorderBuffer(Reorder_Buffer*);
 extern Reorder_Buffer* freesReorderBuffer(Reorder_Buffer*);
 /**@}*/

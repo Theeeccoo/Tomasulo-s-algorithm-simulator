@@ -31,26 +31,22 @@ Reorder_Buffer* reorderBufferInitializer(){
  * @return If it's possible to add a new instruction, returns position where it was inserted.
  * If there's no free room, returns -1.
  */
-int insertInstruction(Instruction *instruction, Reorder_Buffer *rb){
+int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
 	if ( rb->filled_lines > MAX_LINES ) return -1;
 	int	position = rb->filled_lines;
 
 	rb->line[position].instruction_execution = NOT_BUSY;
 	
-	//rb->line[position].instruction = (char*) malloc( SIZE_STR * sizeof(char) ); 
-	//rb->line[position].instruction = "Arroz\0";
-	printf("FOO: %s", instruction->full_instruction);
 	rb->line[position].instruction = instruction->full_instruction;
 
 	rb->line[position].instruction_state = WAITING;
 
-	//rb->line[position].instruction_destination = (char*) malloc( 3 * sizeof(char) );
-	//strcpy(rb->line[position].instruction_destination, instruction->splitted_instruction[1]);
 	rb->line[position].instruction_destination = instruction->splitted_instruction[1];
-	//rb->line[position].instruction_destination[2] = '\0';
 
 	rb->line[position].instruction_result = (char*) malloc( SIZE_STR * sizeof(char) );
 	strcpy(rb->line[position].instruction_result, "NOT CALCULATED YET\0");
+
+	instruction->reorder_buffer_position = position;
 
 	rb->filled_lines += 1;
 
