@@ -46,7 +46,7 @@ int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
 	rb->line[position].instruction_result = (char*) malloc( SIZE_STR * sizeof(char) );
 	strcpy(rb->line[position].instruction_result, "NOT CALCULATED YET\0");
 
-	instruction->reorder_buffer_position = position;
+	instruction->reorder_buffer_position = rb->filled_lines;
 
 	rb->filled_lines += 1;
 

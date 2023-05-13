@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "instructions.h"
+#include "reorder_buffer.h"
 
 #define BOOL	 	int
 #define TRUE	 	1
@@ -53,15 +54,15 @@
 			 * @name Reservation station data
 			 */
 			/**@{*/
-            char* name;     /**< Name of reservation station*/
-            int type;      /**< Type of operating unit*/
+			char* name;     /**< Name of reservation station*/
+			int type;      /**< Type of operating unit*/
 			char* instruction_op;		/**< Name of instruction */
 			char* value_register_read_Vj;	/**< Read register value - Vj */
-            char* value_register_read_Vk;	/**< Read register value - Vk */
-            int information_dependency_Qj;    /**< Read register dependency information - Qj*/
-            int information_dependency_Qk;    /**< Read register dependency information - Qk*/
+			char* value_register_read_Vk;	/**< Read register value - Vk */
+			int information_dependency_Qj;    /**< Read register dependency information - Qj*/
+			int information_dependency_Qk;    /**< Read register dependency information - Qk*/
 			int position_destination_rb;  /**< Which position in reorder buffer the instruction result should go */
-            char* memory_address;   /**< Memory address*/
+			char* memory_address;   /**< Memory address*/
 			/**@}*/
 		} Reservation_Station_Line;
 
@@ -75,7 +76,6 @@
 	/**@}*/
 
 	typedef struct Reservation_Station {
-
 		Reservation_Station_Line line[MAX_LINES_RS];	/**< Lines of our reservation station */
 	} Reservation_Station;
 
@@ -87,6 +87,7 @@
 /**@{*/
 extern Reservation_Station* reservationStationInitializer();
 extern int insertInstructionRS(Instruction*, Reservation_Station*);
+extern char* dependencyIdentifier(Instruction*, char*, int, Reorder_Buffer*);
 extern void printReservationStation(Reservation_Station*);
 //extern Reservation_Station* freesReservationStation(Reservation_Station*);
 /**@}*/

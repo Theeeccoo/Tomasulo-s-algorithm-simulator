@@ -16,23 +16,23 @@
 	#define SIZE_STR	30 
 
 	/**
-		 * @name Instruction types
-		 */
-		/**@{*/
-		#define LOAD		0	/**< Operating unit load */
-		#define ADD     	1	/**< Operating unit add */
-		#define MULT	    2	/**< Operating unit mult */
-		/**@}*/
+	 * @name Instruction types
+	 */
+	/**@{*/
+	#define LOAD		0	/**< Operating unit load */
+	#define ADD     	1	/**< Operating unit add */
+	#define MULT	   	2	/**< Operating unit mult */
+	/**@}*/
 
 	typedef struct Instruction {
 		/**
 		 * @name Instruction data;
 		 */
 		/**@{*/
-		int	reorder_buffer_position;		/**< Position where this instruction was inserted reorder buffer */
-		int type;		 /**< Type of operating unit*/
-		char*	full_instruction;	/**< Full instruction */
-		char**	splitted_instruction;	/**< Instruction splitted */
+		int	reorder_buffer_position;	/**< Position where this instruction was inserted reorder buffer */
+		int 	type;		 		/**< Type of operating unit*/
+		char*	full_instruction;		/**< Full instruction */
+		char**	splitted_instruction;		/**< Instruction splitted */
 		/**@}*/
 	} Instruction;
 

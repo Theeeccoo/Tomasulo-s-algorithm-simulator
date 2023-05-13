@@ -39,19 +39,20 @@ char ** freeCharacterMatrix(char **matrix, int size)
 
 void initializer(char* filename){
 	Reorder_Buffer *rb = reorderBufferInitializer();
-	Instruction *instruction = instructionsInitializer(filename);
+	Instruction *instructions = instructionsInitializer(filename);
 	Reservation_Station *rs = reservationStationInitializer();
 
-	insertInstructionRB(&instruction[0], rb);
-	insertInstructionRB(&instruction[1], rb);
+	insertInstructionRB(&instructions[0], rb);
+	insertInstructionRB(&instructions[1], rb);
 
-	instruction[0].type = LOAD;
-	instruction[1].type = ADD;
-
+	instructions[0].type = LOAD;
+	instructions[1].type = ADD;
 	printReorderBuffer(rb);
 
-	insertInstructionRS(&instruction[0], rs);
-	insertInstructionRS(&instruction[1], rs);
+	insertInstructionRS(&instructions[0], rs);
+	printf("Dependecy found 1: %s\n", dependencyIdentifier(instructions, instructions[0].splitted_instruction[2], instructions[0].reorder_buffer_position, rb));
+	insertInstructionRS(&instructions[1], rs);
+	printf("Dependency found 2: %s\n", dependencyIdentifier(instructions, instructions[1].splitted_instruction[2], instructions[1].reorder_buffer_position, rb));
 
 	printReservationStation(rs);
 	// TODO- Remember to decode the instruction and put its type as defined in instructions.h
