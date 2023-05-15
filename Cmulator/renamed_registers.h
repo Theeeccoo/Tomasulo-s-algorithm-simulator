@@ -64,5 +64,5 @@
             int renamed_to_physical[RENAMED_REGISTERS]; // vector that maps renamed to physical registers
         } Renaming_Bank;
 
+#endif /* RENAMED_REGISTERS_ */
 #endif /* RENAMED_REGISTERS_H_ */
-
