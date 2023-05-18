@@ -4,6 +4,7 @@
 #include "reorder_buffer.h"
 #include "instructions.h"
 #include "reservation_station.h"
+#include "renamed_registers.h"
 
 /** DEFINITIONS **/
 #define MAX_SIZE 20
@@ -19,7 +20,7 @@
  * @details One should free memory using free() function to avoid memory leaks
  *
  */
-char ** freeCharacterMatrix(char **matrix, int size)
+char** freeCharacterMatrix(char **matrix, int size)
 {
     int i = 0;
     if (matrix == NULL)
@@ -40,22 +41,29 @@ char ** freeCharacterMatrix(char **matrix, int size)
 void initializer(char* filename){
 	Reorder_Buffer *rb = reorderBufferInitializer();
 	Instruction *instructions = instructionsInitializer(filename);
-	Reservation_Station *rs = reservationStationInitializer();
+	//Reservation_Station *rs = reservationStationInitializer();
+	
+	printInstructions(instructions, filename);
 
 	insertInstructionRB(&instructions[0], rb);
 	insertInstructionRB(&instructions[1], rb);
 
 	instructions[0].type = LOAD;
 	instructions[1].type = ADD;
+	/*
 	printReorderBuffer(rb);
-
+	
 	insertInstructionRS(&instructions[0], rs);
 	printf("Dependecy found 1: %s\n", dependencyIdentifier(instructions, instructions[0].splitted_instruction[2], instructions[0].reorder_buffer_position, rb));
 	insertInstructionRS(&instructions[1], rs);
 	printf("Dependency found 2: %s\n", dependencyIdentifier(instructions, instructions[1].splitted_instruction[2], instructions[1].reorder_buffer_position, rb));
-
+	
 	printReservationStation(rs);
-	// TODO- Remember to decode the instruction and put its type as defined in instructions.h
+
+
+
+
+	*/
 
 	// Frees pointers
 	/*if (freeCharacterMatrix(barz, 5) == NULL) {

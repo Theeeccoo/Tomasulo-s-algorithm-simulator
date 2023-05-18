@@ -46,4 +46,5 @@ extern Instruction* instructionsInitializer(char*);
 extern char** readInstructions(char*, int);
 extern int numberOfLines(char*);
 extern char** splitInstruction(char*);
+extern void printInstructions(Instruction*, char*);
 /**@}*/

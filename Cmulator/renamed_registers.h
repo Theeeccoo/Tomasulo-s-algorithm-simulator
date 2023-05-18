@@ -51,6 +51,8 @@
             int value; 
         } Renamed_Register;
 
+#endif /* RENAMED_REGISTERS_ */
+
         /**
          * @brief represents the renaming bank itself
          *
@@ -63,6 +65,15 @@
             Renamed_Register renamed_registers[RENAMED_REGISTERS]; // vector of renamed registers
             int renamed_to_physical[RENAMED_REGISTERS]; // vector that maps renamed to physical registers
         } Renaming_Bank;
-
-#endif /* RENAMED_REGISTERS_ */
 #endif /* RENAMED_REGISTERS_H_ */
+
+/**
+ * @name Rename Bank operations
+ */
+/**@{*/
+extern Renaming_Bank* initBank(Renaming_Bank*);
+extern int getFreeRenamedRegister(Renaming_Bank*);
+extern int renameRegister(Renaming_Bank*, int);
+extern int writeBack(Renaming_Bank*, int, int);
+
+/**@}*/

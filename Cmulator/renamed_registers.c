@@ -3,14 +3,17 @@
 #include <stdlib.h>
 
 /**
-         * @brief initializes all registers in the renaming bank
-         *
-         * @details initializes registers with default values, that is,  
-         * with a value of zero and without being renamed
+  * @brief initializes all registers in the renaming bank
+  *
+  * @details initializes registers with default values, that is,  
+  * with a value of zero and without being renamed
+  *
+  * @return Reference to the newly created Renaming_Bank
  */
 
-void initBank(Renaming_Bank *rb) {
+Renaming_Bank* initializeBank(){
     int i;
+    Renaming_Bank *rb = (Renaming_Bank*) malloc( sizeof(Renaming_Bank) );
     for (i = 0; i < REGISTERS; i++) {
         rb->registers[i].value = 0;
         rb->registers[i].renaming = -1;
@@ -21,6 +24,7 @@ void initBank(Renaming_Bank *rb) {
         rb->renamed_registers[i].value = 0;
         rb->renamed_to_physical[i] = -1;
     }
+    return rb;
 }
 
 /**

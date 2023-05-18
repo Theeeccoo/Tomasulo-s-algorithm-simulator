@@ -18,7 +18,7 @@ char** splitInstruction(char *instruction){
 	// Setting size the max size here as 4
 	// but later we need to check if there's any instruction that needs more space ADD R1, R2, R3
 	char	**splitted_string = (char**) malloc(( 5 * (sizeof(char*)) ));
-	char	*delimiter = " ,";
+	char	*delimiter = " ,()";
 	char	*token;
 	int	aux = 0;
 
@@ -135,3 +135,12 @@ Instruction* instructionsInitializer(char* filename){
 	return instructions;
 }
 
+
+void printInstructions(Instruction *it, char* filePath){
+	int	i,
+		size = numberOfLines(filePath);
+	printf("Instrucoes: \n");
+	for ( i = 0; i < size ; i++ ){
+		printf("%s\n", it[i].full_instruction);
+	}
+}
