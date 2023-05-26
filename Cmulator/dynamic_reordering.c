@@ -82,14 +82,14 @@ void executeReservationStation(Reservation_Station *rs, Reorder_Buffer *rb) {
         if (rs->line[i].reservation_busy &&
             rs->line[i].information_dependency_Qj == -1 &&
             rs->line[i].information_dependency_Qk == -1) {
-            // Execute the instruction
-            int result = executeInstruction(rs->line[i].instruction_op,
-                                            rs->line[i].value_register_read_Vj,
-                                            rs->line[i].value_register_read_Vk);
+            // // Execute the instruction
+            // int result = executeInstruction(rs->line[i].instruction_op,
+            //                                 rs->line[i].value_register_read_Vj,
+            //                                 rs->line[i].value_register_read_Vk);
 
-            // Update the result and state in the reorder buffer
-            strcpy(rb->entry[rs->line[i].position_destination_rb].result, result);
-            rb->entry[rs->line[i].position_destination_rb].state = STATE_COMMITTED;
+            // // Update the result and state in the reorder buffer
+            // strcpy(rb->entry[rs->line[i].position_destination_rb].result, result);
+            // rb->entry[rs->line[i].position_destination_rb].state = STATE_COMMITTED;
 
             // Update the reservation station
             rs->line[i].reservation_busy = FALSE;
@@ -115,7 +115,7 @@ void initializer(char* filename){
     printInstructions(instructions, filename);
 
     int i;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < MAX_INSTRUCTIONS; i++) {
         int rs_line = findFreeReservationStationLine(rs);
         if (rs_line != -1) {
             insertInstructionRB(&instructions[i], rb);
@@ -131,12 +131,21 @@ void initializer(char* filename){
     printReorderBuffer(rb);
     printReservationStation(rs);
 
-    // Execution of instructions out of order
-    int executed_instructions = 0;
-    while (executed_instructions < 2) {
+    int num_executed = 0;
+    while (num_executed < MAX_INSTRUCTIONS) {
         checkReservationStationDependencies(rs, rb);
         executeReservationStation(rs, rb);
-        executed_instructions++;
+
+        for (i = 0; i < MAX_INSTRUCTIONS; i++) {
+            if (rb->entry[i].state == STATE_COMMITTED) {
+                num_executed++;
+                // Write the result to the appropriate register in the register file
+                // ...
+                // Update the reservation station and reorder buffer
+                removeInstructionRS(rb->entry[i].position_destination_rs, rs);
+                removeInstructionRB(i, rb);
+            }
+        }
     }
 
     printReorderBuffer(rb);
