@@ -39,7 +39,7 @@ char** freeCharacterMatrix(char **matrix, int size)
 
 
 void initializer(char* filename){
-	/*
+	
 	Reorder_Buffer *rb = reorderBufferInitializer();
 	Instruction *instructions = instructionsInitializer(filename);
 	//Reservation_Station *rs = reservationStationInitializer();
@@ -51,7 +51,7 @@ void initializer(char* filename){
 
 	instructions[0].type = LOAD;
 	instructions[1].type = ADD;
-	*/
+	
 	/*
 	printReorderBuffer(rb);
 	
@@ -76,15 +76,15 @@ void initializer(char* filename){
 	}*/
 
 	//testing register status
-	Register_status  *register = registerStatusInitializer();
-	printRegisterStatus(register);
-	insertRegisterStatus("F0", 3, register);
-	insertRegisterStatus("F6", 6, register);
-	insertRegisterStatus("F8", 4, register);
-	printRegisterStatus(register);
-	insertRegisterStatus("F12", 2, register);
-	insertRegisterStatus("F9", -1 , register);
-	insertRegisterStatus("F", 2, register);
+	Register_status  *registerStatus = registerStatusInitializer();
+	printRegisterStatus(registerStatus);
+	insertRegisterStatus("F0", 3, registerStatus);
+	insertRegisterStatus("F6", 6, registerStatus);
+	insertRegisterStatus("F8", 4, registerStatus);
+	printRegisterStatus(registerStatus);
+	insertRegisterStatus("F12", 2, registerStatus);
+	insertRegisterStatus("F9", -1 , registerStatus);
+	insertRegisterStatus("F", 2, registerStatus);
 }
 
 int main(void){

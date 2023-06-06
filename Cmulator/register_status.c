@@ -5,12 +5,13 @@
 #include <stdio.h>
 
 /**
- * @brief Initializing FP_register_status
+ * @brief Initializing Register Status
  *
- * @details Instantiating a new FP_register_status
+ * @details Instantiating a new FP Register Status
  *
- * @return Reference to the newly created FP_register_status
+ * @return Reference to the newly created FP Register Status
  */
+
 Register_status* registerStatusInitializer(){
 	Register_status* rStatus = (Register_status*) malloc( sizeof(Register_status) );
 	
@@ -62,7 +63,11 @@ Register_status* registerStatusInitializer(){
 	return rStatus;
 }
 
-//comentário
+/**
+ * @brief Finding the position of the register in the Register Status
+ *
+ * @return The position of the register
+ */
 
 int findPosRegister(char* field, Register_status* register_status){
 	int pos = -1;
@@ -78,19 +83,16 @@ int findPosRegister(char* field, Register_status* register_status){
 }
 
 /**
- * @brief Inserting new instruction into one of reservation station
+ * @brief Inserting the information of the register on the table
  *
- * @param instruction to be added
- * @param reservationStation reservation to add the instruction
+ * @param fieldRegister is the register field
+ * @param entryReorderBuffer the entry of the Reorder Buffer
+ * @param register_status is the Register Status to be used
  *
- * @details Receives a new instruction and inserts it into the correct position of a reserve station of 
- * a functional unit.
- * It will check which is the reservation station for the instruction, and if there is not one available, 
- * -1 will be returned. If there is a reservation available, it will return in which line the instruction 
- * is waiting to be executed.
+ * @details First, check if the entry of the reorder buffer and the field of the register is valid.
+ *  Cheking if the register is busy.
  *
- * @return If it's possible to add a new instruction, returns position where it was inserted.
- * If there's no free room, returns -1.
+ * @return the position in the Register Status that was inserted the information in register
  */
 
 int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_status* register_status){
@@ -105,8 +107,13 @@ int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_s
 			printf("** Error: Not found register field!**\n");
 		
 		}else{
-			register_status->column[posRegisterStatus].reorder_entry = entryReorderBuffer;
-			register_status->column[posRegisterStatus].register_busy = BUSY;
+			if(register_status->column[posRegisterStatus].register_busy == BUSY){
+				printf("** Error: The register is busy: %s!**\n", fieldRegister);
+
+			}else{
+				register_status->column[posRegisterStatus].reorder_entry = entryReorderBuffer;
+				register_status->column[posRegisterStatus].register_busy = BUSY;
+			}
 		}
 	}
 	return posRegisterStatus;
@@ -114,9 +121,9 @@ int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_s
 		
 
 /**
- * @brief Prints the Reservation Station
+ * @brief Prints the Register Status
  * 
- * @param reservationStation Reservation station to be printed
+ * @param register_status Register Status to be printed
  *
  */
 void printRegisterStatus(Register_status* register_status){

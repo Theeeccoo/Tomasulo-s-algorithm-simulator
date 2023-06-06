@@ -3,9 +3,9 @@
 /***** =========== ****/
 
 /**
- * @file Cmulator/reservation_station.h
+ * @file Cmulator/register_status.h
  *
- * @brief register_status management 
+ * @brief register status management 
  */
 
 #ifndef REGISTER_STATUS_H_
@@ -28,8 +28,8 @@
 		 * @name Information about register_status
 		 */
 		/**@{*/
-		#define	NOT_BUSY	FALSE	/**< register_status is not with instruction */
-		#define BUSY		TRUE	/**< register_status is with instruction */
+		#define	NOT_BUSY	FALSE	/**< got from reoder buffer */
+		#define BUSY		TRUE	/**< got from reoder buffer */
 		/**@}*/
 
 		/**
@@ -40,15 +40,15 @@
 			 * @name register_status status
 			 */
 			/**@{*/
-			BOOL register_busy;	/**< register_status is with instruction? */
+			BOOL register_busy;   /**< the information if the register is busy */
 			/**@}*/
 			
 			/**
 			 * @name FP register status data
 			 */
 			/**@{*/
-			char* field;     /**< Name of register_status*/
-            int reorder_entry;
+			char* field;     /**< field with the destination of reorder buffer*/
+            int reorder_entry;   /**<Position of the reordering buffer where the register is the destination of the result of the operation*/
 
 			/**@}*/
 		} Register_status_column;
@@ -59,11 +59,11 @@
 	 * @name register_status column controller
 	 */
 	/**@{*/
-	#define MAX_REGISTERS_FP	 11	/* Maximum ammount of possible registers in FP*/
+	#define MAX_REGISTERS_FP	 11	/**<Maximum ammount of possible registers in the table FP register status*/
 	/**@}*/
 
 	typedef struct Register_status {
-		Register_status_column column[MAX_REGISTERS_FP];	/**< column of our register_status */
+		Register_status_column column[MAX_REGISTERS_FP];	/**< column of our register status */
 	} Register_status;
 
 #endif /* REGISTER_STATUS_ */
