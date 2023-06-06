@@ -4,7 +4,7 @@
 #include "reorder_buffer.h"
 #include "instructions.h"
 #include "reservation_station.h"
-#include "renamed_registers.h"
+#include "register_status.h"
 
 /** DEFINITIONS **/
 #define MAX_SIZE 20
@@ -39,6 +39,7 @@ char** freeCharacterMatrix(char **matrix, int size)
 
 
 void initializer(char* filename){
+	/*
 	Reorder_Buffer *rb = reorderBufferInitializer();
 	Instruction *instructions = instructionsInitializer(filename);
 	//Reservation_Station *rs = reservationStationInitializer();
@@ -50,6 +51,7 @@ void initializer(char* filename){
 
 	instructions[0].type = LOAD;
 	instructions[1].type = ADD;
+	*/
 	/*
 	printReorderBuffer(rb);
 	
@@ -59,9 +61,6 @@ void initializer(char* filename){
 	printf("Dependency found 2: %s\n", dependencyIdentifier(instructions, instructions[1].splitted_instruction[2], instructions[1].reorder_buffer_position, rb));
 	
 	printReservationStation(rs);
-
-
-
 
 	*/
 
@@ -75,6 +74,17 @@ void initializer(char* filename){
 	if (freesReorderBuffer(rb) == NULL) {
 		printf("Free the reorderBuffer!\n");
 	}*/
+
+	//testing register status
+	Register_status  *register = registerStatusInitializer();
+	printRegisterStatus(register);
+	insertRegisterStatus("F0", 3, register);
+	insertRegisterStatus("F6", 6, register);
+	insertRegisterStatus("F8", 4, register);
+	printRegisterStatus(register);
+	insertRegisterStatus("F12", 2, register);
+	insertRegisterStatus("F9", -1 , register);
+	insertRegisterStatus("F", 2, register);
 }
 
 int main(void){
