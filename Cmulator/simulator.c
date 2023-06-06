@@ -76,15 +76,20 @@ void initializer(char* filename){
 	}*/
 
 	//testing register status
+	
 	Register_status  *registerStatus = registerStatusInitializer();
 	printRegisterStatus(registerStatus);
 	insertRegisterStatus("F0", 3, registerStatus);
 	insertRegisterStatus("F6", 6, registerStatus);
 	insertRegisterStatus("F8", 4, registerStatus);
 	printRegisterStatus(registerStatus);
+	printf("CALMA EH PARA DAR ERRO AQUI MESMO, CALMA, A GENTE TAVA TESTANDO ERRO, CALMA, TA CERTO ESSE ERRO!\n");
 	insertRegisterStatus("F12", 2, registerStatus);
 	insertRegisterStatus("F9", -1 , registerStatus);
 	insertRegisterStatus("F", 2, registerStatus);
+	freeRegister("F0", registerStatus);
+	freeRegister("F6", registerStatus);
+	printRegisterStatus(registerStatus);
 }
 
 int main(void){
