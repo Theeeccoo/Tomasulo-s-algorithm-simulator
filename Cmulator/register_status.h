@@ -22,7 +22,7 @@
 #define FALSE	 	0 
 #define SIZE_STR	30 
 
-#ifndef REGISTER_STATUS_
+#ifndef REGISTER_STATUS_COLUMN_
 
 		/**
 		 * @name Information about register_status
@@ -53,7 +53,7 @@
 			/**@}*/
 		} Register_status_column;
 
-#endif /* REGISTER_STATUS_ */
+#endif /* REGISTER_STATUS_COLUMN_ */
 
 	/**
 	 * @name register_status column controller
@@ -76,4 +76,5 @@ extern Register_status* registerStatusInitializer();
 extern int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_status* register_status);
 extern void printRegisterStatus(Register_status* register_status);
 extern int findPosRegister(char* field, Register_status* register_status);
+extern int freeRegister(char * fieldRegister, Register_status* register_status);
 /**@}*/

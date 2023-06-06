@@ -97,12 +97,12 @@ int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_s
 	int posRegisterStatus = -1;
 
 	if(entryReorderBuffer == -1){
-		printf("** Error: Invalid position reorder buffer!**\n");
+		printf("** Error: Invalid position reorder buffer: %d!**\n", entryReorderBuffer);
 	
 	}else{
 		posRegisterStatus = findPosRegister(fieldRegister, register_status);
 		if(posRegisterStatus == -1){
-			printf("** Error: Not found register field!**\n");
+			printf("** Error: Not found register field: %s!**\n", fieldRegister);
 		
 		}else{
 			register_status->column[posRegisterStatus].reorder_entry = entryReorderBuffer;
@@ -128,4 +128,27 @@ void printRegisterStatus(Register_status* register_status){
 		printf("Busy: %s\n\n", ( register_status->column[i].register_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
 		
 	}
+}
+
+/**
+ * @brief Freeing a register
+ *
+ * @param fieldRegister Register field to be released
+ * @param register_status Table containing the register
+ *
+ * @details Free the register for the next instruction
+ *
+ * @return If register found, its position in the table will be returned, otherwise -1
+ */
+int freeRegister(char * fieldRegister, Register_status* register_status) {
+	int posRegisterStatus = findPosRegister(fieldRegister, register_status);
+
+	if (posRegisterStatus == -1) {
+		printf("** Error: Not found register field: %s!**\n", fieldRegister);
+	} else {
+		register_status->column[posRegisterStatus].reorder_entry = -1;
+		register_status->column[posRegisterStatus].register_busy = NOT_BUSY;
+	}
+
+	return posRegisterStatus;
 }
