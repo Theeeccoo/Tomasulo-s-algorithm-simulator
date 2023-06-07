@@ -42,7 +42,7 @@ void initializer(char* filename){
 	
 	Reorder_Buffer *rb = reorderBufferInitializer();
 	Instruction *instructions = instructionsInitializer(filename);
-	//Reservation_Station *rs = reservationStationInitializer();
+	Reservation_Station *rs = reservationStationInitializer();
 	
 	printInstructions(instructions, filename);
 
@@ -52,17 +52,17 @@ void initializer(char* filename){
 	instructions[0].type = LOAD;
 	instructions[1].type = ADD;
 	
-	/*
+	
 	printReorderBuffer(rb);
 	
-	insertInstructionRS(&instructions[0], rs);
-	printf("Dependecy found 1: %s\n", dependencyIdentifier(instructions, instructions[0].splitted_instruction[2], instructions[0].reorder_buffer_position, rb));
-	insertInstructionRS(&instructions[1], rs);
-	printf("Dependency found 2: %s\n", dependencyIdentifier(instructions, instructions[1].splitted_instruction[2], instructions[1].reorder_buffer_position, rb));
+	insertInstructionRS(&instructions[0], rs, instructions, rb);
+	//printf("Dependecy found 1: %s\n", dependencyIdentifier(instructions, instructions[0].splitted_instruction[2], instructions[0].reorder_buffer_position, rb));
+	insertInstructionRS(&instructions[1], rs, instructions, rb);
+	//printf("Dependency found 2: %s\n", dependencyIdentifier(instructions, instructions[1].splitted_instruction[2], instructions[1].reorder_buffer_position, rb));
 	
 	printReservationStation(rs);
 
-	*/
+	
 
 	// Frees pointers
 	/*if (freeCharacterMatrix(barz, 5) == NULL) {
@@ -76,7 +76,7 @@ void initializer(char* filename){
 	}*/
 
 	//testing register status
-	
+	/*
 	Register_status  *registerStatus = registerStatusInitializer();
 	printRegisterStatus(registerStatus);
 	insertRegisterStatus("F0", 3, registerStatus);
@@ -90,6 +90,7 @@ void initializer(char* filename){
 	freeRegister("F0", registerStatus);
 	freeRegister("F6", registerStatus);
 	printRegisterStatus(registerStatus);
+	*/
 }
 
 int main(void){
