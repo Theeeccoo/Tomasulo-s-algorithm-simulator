@@ -32,8 +32,8 @@ Reorder_Buffer* reorderBufferInitializer(){
  * If there's no free room, returns -1.
  */
 int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
-	if ( rb->filled_lines > MAX_LINES ) return -1;
-	int	position = rb->filled_lines;
+	
+	int	position = rb->filled_lines % MAX_LINES;
 
 	rb->line[position].instruction_execution = NOT_BUSY;
 	

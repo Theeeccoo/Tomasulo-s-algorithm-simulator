@@ -13,6 +13,8 @@
  */
 Reservation_Station* reservationStationInitializer(){
 	Reservation_Station* rs = (Reservation_Station*) malloc( sizeof(Reservation_Station) );
+
+	//TODO - Inicializar as variáveis que precisa de colocar a posição do reorder buffer com -1
 	
 	rs->line[0].name = "Load1";
 	rs->line[0].type = LOAD;
@@ -60,7 +62,7 @@ Reservation_Station* reservationStationInitializer(){
  * @return If it's possible to add a new instruction, returns position where it was inserted.
  * If there's no free room, returns -1.
  */
-int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation){
+int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation, Instruction *instructions, Reorder_Buffer *rb){
 	int positionRS = -1, pos = 0;
 
 	// TODO - Caso tenha dependência falsa (escrita após escrita, ou escrita após leitura)
@@ -104,8 +106,13 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 		reservationStation->line[positionRS].instruction_op = instruction->splitted_instruction[0];
 		reservationStation->line[positionRS].value_register_read_Vj = "T4";
 		reservationStation->line[positionRS].value_register_read_Vk = "R1";
-		reservationStation->line[positionRS].information_dependency_Qj = instruction->reorder_buffer_position;
-		reservationStation->line[positionRS].information_dependency_Qk = instruction->reorder_buffer_position;
+		if (instruction->type == LOAD) {
+			// TODO - Pegar a dependência de forma especial para Load e Store
+		} else {
+			reservationStation->line[positionRS].information_dependency_Qj = warDependencyIdentifier(instructions, instruction->splitted_instruction[2], instruction->reorder_buffer_position, rb);
+			reservationStation->line[positionRS].information_dependency_Qk = warDependencyIdentifier(instructions, instruction->splitted_instruction[3], instruction->reorder_buffer_position, rb);
+		}
+		
 		reservationStation->line[positionRS].position_destination_rb = instruction->reorder_buffer_position;
 		reservationStation->line[positionRS].memory_address = "Mem[32 + REG[R1]]";
 	}
@@ -113,11 +120,24 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 	return positionRS;
 }
 
-// Talvez seja interessante colocar em Instruction o state (existente no Reorder_buffer) para não precisar de chamar ele aqui
-char* dependencyIdentifier(Instruction *all_instructions, char *analyzed_register, int position, Reorder_Buffer *rb){
+/**
+ * @brief Identify true dependency on a statement
+ *
+ * @param all_instructions All instructions
+ * @param analyzed_register Register that will be analyzed if there is a true dependency
+ * @param position Position in the reorder buffer of the instruction that contains the register that will be analyzed
+ * @param rb Reorder Buffer
+ *
+ * @details Receives the register that will be analyzed if there is a true dependency and returns the position in the 
+ * 			reorder buffer of the instruction that is depending
+ *
+ * @return If there is a dependency, the position in the reorder buffer of the instruction that the register depends 
+ * 	       on will be returned, otherwise, if there is no dependency, -1 will be returned
+*/
+// TODO - Talvez seja interessante colocar em Instruction o state (existente no Reorder_buffer) para não precisar de chamar ele aqui
+int warDependencyIdentifier(Instruction *all_instructions, char *analyzed_register, int position, Reorder_Buffer *rb){
 	int	i = 0;
-	char *result = (char*) malloc( SIZE_STR * sizeof(char) );
-	strcpy(result, "NONE\0");
+	int result = -1;
 	if ( position != 0 ) {
 		/* Retrieving the last dependecy found */
 		for ( i = 0; i < position; i++ ) {
@@ -125,20 +145,11 @@ char* dependencyIdentifier(Instruction *all_instructions, char *analyzed_registe
 				continue;
 			
 			char *destination = all_instructions[i].splitted_instruction[1];
-			char *first_register = all_instructions[i].splitted_instruction[2];
-			char *second_register = all_instructions[i].splitted_instruction[3];
 
 			/* RAW (Read After Write) dependency */
-			if ( strcmp(destination, analyzed_register) == 0 ) 
-				strcpy(result, destination);
-
-			/* WAW (Write After Write) WAR (Write After Read) dependecy */
-			if ( strcmp(first_register, analyzed_register) == 0 ||
-			     strcmp(second_register, analyzed_register) == 0  ) {
-				printf("\n\nNeed to rename the register here!! :)");
+			if ( strcmp(destination, analyzed_register) == 0 ) {
+				result = all_instructions[i].reorder_buffer_position;
 			}
-
-			     
 		}
 	}
 	return result;
@@ -158,9 +169,9 @@ void printReservationStation(Reservation_Station *reservationStation){
 		printf("Busy: %s\n", ( reservationStation->line[i].reservation_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
 		printf("Instruction Op: %s\n", reservationStation->line[i].instruction_op);
 		printf("Vj: %s\n", reservationStation->line[i].value_register_read_Vj);
-       		printf("Vk: %s\n", reservationStation->line[i].value_register_read_Vk);
-        	printf("Qj: %d\n", reservationStation->line[i].information_dependency_Qj);
-        	printf("Qk: %d\n", reservationStation->line[i].information_dependency_Qk);
+       	printf("Vk: %s\n", reservationStation->line[i].value_register_read_Vk);
+        printf("Qj: %d\n", reservationStation->line[i].information_dependency_Qj);
+        printf("Qk: %d\n", reservationStation->line[i].information_dependency_Qk);
 		printf("Destination: %d\n", reservationStation->line[i].position_destination_rb);
 		printf("Memory Address: %s\n\n", reservationStation->line[i].memory_address);
 	}
