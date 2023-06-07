@@ -59,11 +59,11 @@
 	 * @name register_status column controller
 	 */
 	/**@{*/
-	#define MAX_REGISTERS_FP	 11	/**<Maximum ammount of possible registers in the table FP register status*/
+	#define MAX_REGISTERS	 32	/**<Maximum ammount of possible registers in the table FP register status*/
 	/**@}*/
 
 	typedef struct Register_status {
-		Register_status_column column[MAX_REGISTERS_FP];	/**< column of our register status */
+		Register_status_column column[MAX_REGISTERS];	/**< column of our register status */
 	} Register_status;
 
 #endif /* REGISTER_STATUS_ */
