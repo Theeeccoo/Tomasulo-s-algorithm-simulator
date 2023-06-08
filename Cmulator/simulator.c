@@ -46,12 +46,19 @@ void initializer(char* filename){
 	
 	printInstructions(instructions, filename);
 
-	insertInstructionRB(&instructions[0], rb);
-	insertInstructionRB(&instructions[1], rb);
+	instructions[0].reorder_buffer_position = insertInstructionRB(&instructions[0], rb);
+	instructions[1].reorder_buffer_position = insertInstructionRB(&instructions[1], rb);
+	instructions[5].reorder_buffer_position = insertInstructionRB(&instructions[5], rb);
+	instructions[4].reorder_buffer_position = insertInstructionRB(&instructions[4], rb);
 
-	instructions[0].type = LOAD;
+	instructions[0].type = ADD;
 	instructions[1].type = ADD;
+	instructions[5].type = LOAD;
+	instructions[4].type = LOAD;
 	
+
+	printf("%d", instructions[5].reorder_buffer_position );
+
 	
 	printReorderBuffer(rb);
 	
@@ -59,7 +66,9 @@ void initializer(char* filename){
 	//printf("Dependecy found 1: %s\n", dependencyIdentifier(instructions, instructions[0].splitted_instruction[2], instructions[0].reorder_buffer_position, rb));
 	insertInstructionRS(&instructions[1], rs, instructions, rb);
 	//printf("Dependency found 2: %s\n", dependencyIdentifier(instructions, instructions[1].splitted_instruction[2], instructions[1].reorder_buffer_position, rb));
-	
+	insertInstructionRS(&instructions[5], rs, instructions, rb);
+	insertInstructionRS(&instructions[4], rs, instructions, rb);
+
 	printReservationStation(rs);
 
 	

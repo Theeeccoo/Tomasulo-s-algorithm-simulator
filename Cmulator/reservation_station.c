@@ -104,15 +104,32 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 
 		reservationStation->line[positionRS].reservation_busy = BUSY;
 		reservationStation->line[positionRS].instruction_op = instruction->splitted_instruction[0];
-		reservationStation->line[positionRS].value_register_read_Vj = "T4";
-		reservationStation->line[positionRS].value_register_read_Vk = "R1";
-		if (instruction->type == LOAD) {
+		if ( instruction->type == LOAD ) {
 			// TODO - Pegar a dependência de forma especial para Load e Store
+
+			if ( strcmp(instruction->splitted_instruction[0], "SW") == 0 ) { 
+				int foo = warDependencyIdentifier(instructions, instruction->splitted_instruction[1], instruction->reorder_buffer_position, rb);
+				printf("Entrei aqui: %d\n", foo);
+				reservationStation->line[positionRS].information_dependency_Qj = warDependencyIdentifier(instructions, instruction->splitted_instruction[1], instruction->reorder_buffer_position, rb);
+			} else {
+				reservationStation->line[positionRS].information_dependency_Qj = -1;
+			}
+			reservationStation->line[positionRS].information_dependency_Qk = warDependencyIdentifier(instructions, instruction->splitted_instruction[3], instruction->reorder_buffer_position, rb);
+
 		} else {
 			reservationStation->line[positionRS].information_dependency_Qj = warDependencyIdentifier(instructions, instruction->splitted_instruction[2], instruction->reorder_buffer_position, rb);
 			reservationStation->line[positionRS].information_dependency_Qk = warDependencyIdentifier(instructions, instruction->splitted_instruction[3], instruction->reorder_buffer_position, rb);
 		}
 		
+		if ( reservationStation->line[positionRS].information_dependency_Qj == -1 ) {
+			reservationStation->line[positionRS].value_register_read_Vj = (char*) malloc ( SIZE_STR * sizeof(char) );
+			strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[2] );
+		}
+		if ( reservationStation->line[positionRS].information_dependency_Qk == -1 ) {
+			reservationStation->line[positionRS].value_register_read_Vk = (char*) malloc ( SIZE_STR * sizeof(char) );
+			strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[3] );
+		}
+
 		reservationStation->line[positionRS].position_destination_rb = instruction->reorder_buffer_position;
 		reservationStation->line[positionRS].memory_address = "Mem[32 + REG[R1]]";
 	}
@@ -138,16 +155,17 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 int warDependencyIdentifier(Instruction *all_instructions, char *analyzed_register, int position, Reorder_Buffer *rb){
 	int	i = 0;
 	int result = -1;
-	if ( position != 0 ) {
+	if ( position >= 0 ) {
 		/* Retrieving the last dependecy found */
 		for ( i = 0; i < position; i++ ) {
 			if ( rb->line[i].instruction_state == WRITE_RESULT || rb->line[i].instruction_state == COMMITED ) 
 				continue;
 			
 			char *destination = all_instructions[i].splitted_instruction[1];
-
+			printf("\nTestando: %d (%s %d) \n", all_instructions[i].reorder_buffer_position, analyzed_register, position);
 			/* RAW (Read After Write) dependency */
 			if ( strcmp(destination, analyzed_register) == 0 ) {
+				
 				result = all_instructions[i].reorder_buffer_position;
 			}
 		}

@@ -48,8 +48,7 @@
 			 */
 			/**@{*/
 			char* field;     /**< field with the destination of reorder buffer*/
-            int reorder_entry;   /**<Position of the reordering buffer where the register is the destination of the result of the operation*/
-
+            		int reorder_entry;   /**<Position of the reordering buffer where the register is the destination of the result of the operation*/
 			/**@}*/
 		} Register_status_column;
 
