@@ -35,7 +35,7 @@ int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
 	
 	int	position = rb->filled_lines % MAX_LINES;
 
-	rb->line[position].instruction_execution = NOT_BUSY;
+	rb->line[position].instruction_execution = BUSY;
 	
 	rb->line[position].instruction = instruction->full_instruction;
 
@@ -46,32 +46,42 @@ int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
 	rb->line[position].instruction_result = (char*) malloc( SIZE_STR * sizeof(char) );
 	strcpy(rb->line[position].instruction_result, "NOT CALCULATED YET\0");
 
-	instruction->reorder_buffer_position = rb->filled_lines;
+	instruction->reorder_buffer_position = position;
 
 	rb->filled_lines += 1;
 
-	return rb->filled_lines;
+	return position;
 }
 
 /**
- * @brief Prints the Reorder Buffer
+ * @brief Print the lines of the reorder buffer in order from the first to the last statement placed.
  * 
- * @param reorder buffer to be printed
+ * @param rb buffer to be printed
  *
  */
 void printReorderBuffer(Reorder_Buffer *rb){
 	int	i = 0,
-		max = rb->filled_lines;
+		init = rb->filled_lines % MAX_LINES,
+		end = ((init - 1) < 0 ? (MAX_LINES - 1) : (init - 1));
 	printf("\n\n\nPrinting Reorder Buffer. . .\n");
-	for( i = 0; i < max; i++ ) {
+	printf("init: %d  -   end: %d\n", init, end);
+	for( i = init; i != end; i = ((i + 1) % MAX_LINES) ) {
 		printf("Entry: %d\n", i);
 		printf("Busy: %s\n", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
 		printf("Instruction: %s\n", rb->line[i].instruction);
-		printf("State: %d\n", rb->line[i].instruction_state);
+		printf("State: %s\n", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
 		printf("Destination: %s\n", rb->line[i].instruction_destination);
 		printf("Values: %s\n", rb->line[i].instruction_result);
 		printf("\n");
 	}
+	// Print the last position alone
+	printf("Entry: %d\n", end);
+	printf("Busy: %s\n", ( rb->line[end].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
+	printf("Instruction: %s\n", rb->line[end].instruction);
+	printf("State: %s\n", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
+	printf("Destination: %s\n", rb->line[end].instruction_destination);
+	printf("Values: %s\n", rb->line[end].instruction_result);
+	printf("\n");
 }
 
 /**

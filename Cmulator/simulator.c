@@ -46,28 +46,38 @@ void initializer(char* filename){
 	
 	printInstructions(instructions, filename);
 
+	// Inserindo instrução: ADD R2, R2, R3
 	instructions[0].reorder_buffer_position = insertInstructionRB(&instructions[0], rb);
+	// Inserindo instrução: SUB R1, R2, R3
 	instructions[1].reorder_buffer_position = insertInstructionRB(&instructions[1], rb);
+	// Inserindo instrução: SW R1, 0(R1)
 	instructions[5].reorder_buffer_position = insertInstructionRB(&instructions[5], rb);
+	// Inserindo instrução: LW R1, 0(R1)
 	instructions[4].reorder_buffer_position = insertInstructionRB(&instructions[4], rb);
+	// Inserindo instrução: ADD R1, R2, R3
+	instructions[7].reorder_buffer_position = insertInstructionRB(&instructions[7], rb);
+
+
 
 	instructions[0].type = ADD;
 	instructions[1].type = ADD;
 	instructions[5].type = LOAD;
 	instructions[4].type = LOAD;
+	instructions[7].type = ADD;
 	
 
-	printf("%d", instructions[5].reorder_buffer_position );
+	printf("%d", instructions[4].reorder_buffer_position );
 
 	
 	printReorderBuffer(rb);
 	
-	insertInstructionRS(&instructions[0], rs, instructions, rb);
+	insertInstructionRS(&instructions[0], rs, rb);
 	//printf("Dependecy found 1: %s\n", dependencyIdentifier(instructions, instructions[0].splitted_instruction[2], instructions[0].reorder_buffer_position, rb));
-	insertInstructionRS(&instructions[1], rs, instructions, rb);
+	insertInstructionRS(&instructions[1], rs, rb);
 	//printf("Dependency found 2: %s\n", dependencyIdentifier(instructions, instructions[1].splitted_instruction[2], instructions[1].reorder_buffer_position, rb));
-	insertInstructionRS(&instructions[5], rs, instructions, rb);
-	insertInstructionRS(&instructions[4], rs, instructions, rb);
+	insertInstructionRS(&instructions[5], rs, rb);
+	insertInstructionRS(&instructions[4], rs, rb);
+	insertInstructionRS(&instructions[7], rs, rb);
 
 	printReservationStation(rs);
 

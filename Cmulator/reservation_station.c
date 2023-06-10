@@ -52,6 +52,7 @@ Reservation_Station* reservationStationInitializer(){
  *
  * @param instruction to be added
  * @param reservationStation reservation to add the instruction
+ * @param rb Reorder buffer
  *
  * @details Receives a new instruction and inserts it into the correct position of a reserve station of 
  * a functional unit.
@@ -62,63 +63,53 @@ Reservation_Station* reservationStationInitializer(){
  * @return If it's possible to add a new instruction, returns position where it was inserted.
  * If there's no free room, returns -1.
  */
-int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation, Instruction *instructions, Reorder_Buffer *rb){
+int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation, Reorder_Buffer *rb){
 	int positionRS = -1, pos = 0;
 
 	// TODO - Caso tenha dependência falsa (escrita após escrita, ou escrita após leitura)
 	// renomear o registrador com o nome da estação de reserva, analisando todas as 
 	// instruções anteriores a esta no buffer de reordenamento
 
-	// TODO - Caso tenha dependência verdadeira (leitura após escrita) escrever em Qj e Qk de 
-	// qual posição do buffer de reordenamento o registrador de leitura da instrução inserida depende
-
 	if ( instruction->type == LOAD ) {
 		for ( pos = 0; pos < 2; pos++ ) {
 		    if ( reservationStation->line[pos].reservation_busy == NOT_BUSY ) {
-			positionRS = pos;
-			pos = 2;
+				positionRS = pos;
+				pos = 2;
 		    }
 		}
 
 	} else if ( instruction->type == ADD ) {
 		for ( pos = 2; pos < 5; pos++ ) {
 		    if ( reservationStation->line[pos].reservation_busy == NOT_BUSY ) {
-			positionRS = pos;
-			pos = 5;
+				positionRS = pos;
+				pos = 5;
 		    }
 		}
 	} else {
 		for ( pos = 5; pos < 7; pos++ ) {
 		    if ( reservationStation->line[pos].reservation_busy == NOT_BUSY ) {
-			positionRS = pos;
-
-			pos = 7;
+				positionRS = pos;
+				pos = 7;
 		    }
 		}
 	}
 
 	if (positionRS != -1) {
-		// TODO - Atualmente as dependências estão sendo mostradas pela posição no reorder buffer na qual
-		// a instrução depende, precisamos verificar se é assim mesmo no algoritmo de tomasulo, pois a outra
-		// opção é colocar ao invés da posição no reorder buffer o nome da estação de reserva que se depende
-
 		reservationStation->line[positionRS].reservation_busy = BUSY;
 		reservationStation->line[positionRS].instruction_op = instruction->splitted_instruction[0];
 		if ( instruction->type == LOAD ) {
-			// TODO - Pegar a dependência de forma especial para Load e Store
 
 			if ( strcmp(instruction->splitted_instruction[0], "SW") == 0 ) { 
-				int foo = warDependencyIdentifier(instructions, instruction->splitted_instruction[1], instruction->reorder_buffer_position, rb);
-				printf("Entrei aqui: %d\n", foo);
-				reservationStation->line[positionRS].information_dependency_Qj = warDependencyIdentifier(instructions, instruction->splitted_instruction[1], instruction->reorder_buffer_position, rb);
+				reservationStation->line[positionRS].information_dependency_Qj = warDependencyIdentifier(instruction->splitted_instruction[1], instruction->reorder_buffer_position, rb);
 			} else {
 				reservationStation->line[positionRS].information_dependency_Qj = -1;
 			}
-			reservationStation->line[positionRS].information_dependency_Qk = warDependencyIdentifier(instructions, instruction->splitted_instruction[3], instruction->reorder_buffer_position, rb);
+			
+			reservationStation->line[positionRS].information_dependency_Qk = warDependencyIdentifier(instruction->splitted_instruction[3], instruction->reorder_buffer_position, rb);
 
 		} else {
-			reservationStation->line[positionRS].information_dependency_Qj = warDependencyIdentifier(instructions, instruction->splitted_instruction[2], instruction->reorder_buffer_position, rb);
-			reservationStation->line[positionRS].information_dependency_Qk = warDependencyIdentifier(instructions, instruction->splitted_instruction[3], instruction->reorder_buffer_position, rb);
+			reservationStation->line[positionRS].information_dependency_Qj = warDependencyIdentifier(instruction->splitted_instruction[2], instruction->reorder_buffer_position, rb);
+			reservationStation->line[positionRS].information_dependency_Qk = warDependencyIdentifier(instruction->splitted_instruction[3], instruction->reorder_buffer_position, rb);
 		}
 		
 		if ( reservationStation->line[positionRS].information_dependency_Qj == -1 ) {
@@ -138,9 +129,21 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 }
 
 /**
+ * @brief Checks if the instruction performs writing
+ *
+ * @param nameInstruction Name of the instruction that will be parsed
+ *
+ * @details Checks if the instruction performs writing
+ *
+ * @return If the instruction performs writing, 1 will be returned, otherwise 0
+*/
+int dontDoWrite(char* nameInstruction) {
+	return ((strcmp(nameInstruction, "SW") == 0) || (strcmp(nameInstruction, "BEQ") == 0));
+}
+
+/**
  * @brief Identify true dependency on a statement
  *
- * @param all_instructions All instructions
  * @param analyzed_register Register that will be analyzed if there is a true dependency
  * @param position Position in the reorder buffer of the instruction that contains the register that will be analyzed
  * @param rb Reorder Buffer
@@ -151,22 +154,24 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
  * @return If there is a dependency, the position in the reorder buffer of the instruction that the register depends 
  * 	       on will be returned, otherwise, if there is no dependency, -1 will be returned
 */
-// TODO - Talvez seja interessante colocar em Instruction o state (existente no Reorder_buffer) para não precisar de chamar ele aqui
-int warDependencyIdentifier(Instruction *all_instructions, char *analyzed_register, int position, Reorder_Buffer *rb){
+int warDependencyIdentifier(char *analyzed_register, int position, Reorder_Buffer *rb){
 	int	i = 0;
 	int result = -1;
-	if ( position >= 0 ) {
+	char * delimeter = ", ";
+	int init = rb->filled_lines % MAX_LINES;
+	if ( position > init ) {
+		
 		/* Retrieving the last dependecy found */
-		for ( i = 0; i < position; i++ ) {
-			if ( rb->line[i].instruction_state == WRITE_RESULT || rb->line[i].instruction_state == COMMITED ) 
+		for ( i = position; i != ((init - 1) % MAX_LINES); i = ((i - 1) % MAX_LINES) ) {
+			char* instruction_splited = strtok(rb->line[i].instruction, delimeter);
+
+			// If the instruction already has its result, or if it does not write to the register, there is no need to analyze the dependency
+			if ( rb->line[i].instruction_state == WRITE_RESULT || rb->line[i].instruction_state == COMMITED || (dontDoWrite(instruction_splited) == 1)) 
 				continue;
 			
-			char *destination = all_instructions[i].splitted_instruction[1];
-			printf("\nTestando: %d (%s %d) \n", all_instructions[i].reorder_buffer_position, analyzed_register, position);
 			/* RAW (Read After Write) dependency */
-			if ( strcmp(destination, analyzed_register) == 0 ) {
-				
-				result = all_instructions[i].reorder_buffer_position;
+			if ( strcmp(rb->line[i].instruction_destination, analyzed_register) == 0 ) {
+				result = i;
 			}
 		}
 	}

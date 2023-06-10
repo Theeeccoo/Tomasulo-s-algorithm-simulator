@@ -86,8 +86,9 @@
  */
 /**@{*/
 extern Reservation_Station* reservationStationInitializer();
-extern int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation, Instruction *instructions, Reorder_Buffer *rb);
-extern int warDependencyIdentifier(Instruction*, char*, int, Reorder_Buffer*);
+extern int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation, Reorder_Buffer *rb);
+extern int dontDoWrite(char* nameInstruction);
+extern int warDependencyIdentifier(char*, int, Reorder_Buffer*);
 extern void printReservationStation(Reservation_Station*);
 //extern Reservation_Station* freesReservationStation(Reservation_Station*);
 /**@}*/
