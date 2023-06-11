@@ -36,7 +36,7 @@
 		#define WAITING			0	/**< Instruction is waiting to be inserted into a unity */
 		#define ISSUE			1	/**< Instruction was sent to a functional unity */
 		#define EXECUTING		2	/**< Instruction is being executed by a unity */
-		#define	WRITE_RESULT	3	/**< Instruction is heading to the reorder buffer */
+		#define	WRITE_RESULT		3	/**< Instruction is heading to the reorder buffer */
 		#define	COMMITED		4	/**< Instruction is done */
 		/**@}*/
 		
@@ -49,17 +49,16 @@
 			 * @name Instruction status
 			 */
 			/**@{*/
-			BOOL instruction_execution;	/**< Instruction is being executed? */
-			int instruction_state;		/**< Which 'pipeline' stage the instruction is */
+			BOOL		instruction_execution;	/**< Instruction is being executed? */
+			int		instruction_state;	/**< Which 'pipeline' stage the instruction is */
 			/**@}*/
 			
 			/**
 			 * @name Instruction data
 			 */
 			/**@{*/
-			char* instruction;		/**< Instruction itself */
-			char* instruction_result;	/**< Result of executing the instruction */
-			char* instruction_destination;  /**< Which register the instruction result should go */
+			char*		instruction_result;	/**< Result of executing the instruction */ 
+			Instruction* 	instruction;
 			/**@}*/
 		} Reorder_Buffer_Line;
 

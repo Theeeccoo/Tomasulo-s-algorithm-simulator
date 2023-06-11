@@ -176,20 +176,19 @@ int dontDoWrite(char* nameInstruction) {
 int warDependencyIdentifier(char *analyzed_register, int position, Reorder_Buffer *rb){
 	int	i = 0;
 	int result = -1;
-	char * delimeter = ", ";
 	int init = rb->filled_lines % MAX_LINES;
 	if ( position > init ) {
 		
 		/* Retrieving the last dependecy found */
 		for ( i = position; i != ((init - 1) % MAX_LINES); i = ((i - 1) % MAX_LINES) ) {
-			char* instruction_splited = strtok(rb->line[i].instruction, delimeter);
+			char* instruction_operation = rb->line[i].instruction->splitted_instruction[0];
 
 			// If the instruction already has its result, or if it does not write to the register, there is no need to analyze the dependency
-			if ( rb->line[i].instruction_state == WRITE_RESULT || rb->line[i].instruction_state == COMMITED || (dontDoWrite(instruction_splited) == 1)) 
+			if ( rb->line[i].instruction_state == WRITE_RESULT || rb->line[i].instruction_state == COMMITED || (dontDoWrite(instruction_operation) == 1)) 
 				continue;
 			
 			/* RAW (Read After Write) dependency */
-			if ( strcmp(rb->line[i].instruction_destination, analyzed_register) == 0 ) {
+			if ( strcmp(rb->line[i].instruction->splitted_instruction[1], analyzed_register) == 0 ) {
 				result = i;
 			}
 		}
