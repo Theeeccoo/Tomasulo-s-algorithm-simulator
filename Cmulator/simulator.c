@@ -37,15 +37,142 @@ char** freeCharacterMatrix(char **matrix, int size)
     return (NULL);
 }
 
+int decoder(char* operation){
+	int	resp = -1;
+
+	if ( strcmp(operation, "LW") == 0 || strcmp(operation, "SW") == 0 )  {
+		resp = LOAD;
+	} else if ( strcmp(operation, "ADD") == 0 || strcmp(operation, "SUB") == 0 ) {
+		resp = ADD;
+	} else if ( strcmp(operation, "MULT") == 0 || strcmp(operation, "DIV") == 0 ) {
+		resp = MULT;
+	} else if ( strcmp(operation, "BNE") == 0 || strcmp(operation, "beq") == 0 ) {
+		resp = BRANCH;
+	}
+
+	return resp;
+}
+
+int noDependencies(int qj, int qk){
+	printf("(%d) %d && (%d) %d = %d\n", qj, qj == -1, qk ,qk == -1, ((qj == -1) && (qk == -1)));
+	return ((qj == -1) && (qk == -1));
+}
+
 
 void initializer(char* filename){
 	
 	Reorder_Buffer *rb = reorderBufferInitializer();
 	Instruction *instructions = instructionsInitializer(filename);
 	Reservation_Station *rs = reservationStationInitializer();
+	//int number_of_instructions = numberOfLines(filename); 
+	int init = rb->filled_lines % MAX_LINES,
+	    end  = ((init - 1) % MAX_LINES < 0) ? MAX_LINES - 1 : (init - 1);
+	int i, j, old_position = 0;
+
 	
 	printInstructions(instructions, filename);
+	
+	while ( rb->line[end].instruction_state != COMMITED ) {
+		// Adding into Reorder Buffer
+		init = rb->filled_lines % MAX_LINES;
+		end = ( (init - 1) % MAX_LINES < 0 ) ? MAX_LINES - 1 : (init - 1);
+		for ( i = init ; i != end; i = (i + 1) % MAX_LINES ) {
+			if ( rb->line[i].instruction_execution != BUSY ) {
+				int position = insertInstructionRB( &instructions[old_position], rb );
+				rb->line[i].instruction->reorder_buffer_position = position;
+				rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] );
 
+				old_position ++;
+			}
+		}
+		if ( rb->line[i].instruction_execution != BUSY ) {
+			int position = insertInstructionRB( &instructions[old_position], rb );
+			rb->line[i].instruction->reorder_buffer_position = position;
+			rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] ); 
+		}
+
+
+		// Adding into Reservation Station
+		init = rb->filled_lines % MAX_LINES;
+		end = ( (init - 1) % MAX_LINES < 0 ) ? MAX_LINES - 1 : (init - 1);
+
+		for ( i = init; i != end; i = (i + 1) % MAX_LINES ) {
+			if ( rb->line[i].instruction_state == WAITING ) { 
+				int logical = 0 ;
+				if ( (logical = insertInstructionRS(rb->line[i].instruction, rs, rb)) != -1 )
+					rb->line[i].instruction_state = ISSUE;
+			}
+		}
+		if ( rb->line[i].instruction_state == WAITING ) {
+			int logical = 0;
+			if ( (logical = insertInstructionRS(rb->line[i].instruction, rs, rb)) != -1){
+				rb->line[i].instruction_state = ISSUE;
+			}
+					
+					
+		}
+
+
+		printReorderBuffer(rb);
+		printReservationStation(rs);
+		
+		fflush(stdin);
+		printf("\n\n**Press Enter to continue your execution. . .\n");
+		getchar();
+		system("cls || clear");
+
+		// Execution 
+		for ( i = 0; i < MAX_LINES_RS; i++ ){
+			if (noDependencies( rs->line[i].information_dependency_Qj, rs->line[i].information_dependency_Qk ) == 1) {
+				int inst_position = rs->line[i].position_destination_rb;
+				rb->line[inst_position].instruction_state = WRITE_RESULT;
+				// TODO ARRUMAR O RESULT AQUI O >>>
+				strcpy( rb->line[inst_position].instruction_result, "Terminado aqui.");
+				
+				for ( j = 0; j < MAX_LINES_RS; j++ ){
+					if ( rs->line[j].information_dependency_Qj == inst_position ) {
+						rs->line[j].value_register_read_Vj = (char*) malloc( sizeof(char) * SIZE_STR );
+						strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
+						rs->line[j].information_dependency_Qj = -1;
+					}
+					if ( rs->line[j].information_dependency_Qk == inst_position ) {
+						rs->line[j].value_register_read_Vk = (char*) malloc( sizeof(char) * SIZE_STR );
+						strcpy( rs->line[j].value_register_read_Vk, rb->line[inst_position].instruction->splitted_instruction[1] );
+						rs->line[j].information_dependency_Qk = -1;
+					}
+					printReservationStation(rs);
+					fflush(stdin);
+					getchar();
+					system("cls || clear");
+				}
+				// TODO LIMPAR A LINHA EXECUTADA DA ESTACAO DE RESERVA
+				//      CHECAR DESVIO
+			}
+			printReservationStation(rs);
+			fflush(stdin);
+			getchar();
+			system("cls || clear");
+		}
+		
+		// TODO COMMIT REORDER BUFFER
+		//      DEPENDENCIA FALSA (Renomeacao)
+		//      CHECAR DESVIO (nao sabemos se sera aqui) 
+
+
+		printReorderBuffer(rb);
+		printReservationStation(rs);
+		
+		fflush(stdin);
+		printf("\n\n**Press Enter to continue your execution. . .\n");
+		getchar();
+		system("cls || clear");
+	}
+	
+	
+
+
+
+	/**
 	// Inserindo instrução: ADD R2, R2, R3
 	instructions[0].reorder_buffer_position = insertInstructionRB(&instructions[0], rb);
 	// Inserindo instrução: SUB R1, R2, R3
@@ -80,7 +207,9 @@ void initializer(char* filename){
 	insertInstructionRS(&instructions[7], rs, rb);
 
 	printReservationStation(rs);
+	*/
 
+	
 	
 
 	// Frees pointers
