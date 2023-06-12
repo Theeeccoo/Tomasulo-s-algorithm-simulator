@@ -123,13 +123,25 @@ void initializer(char* filename){
 
 		// Execution 
 		for ( i = 0; i < MAX_LINES_RS; i++ ){
+			if ( rs->line[i].reservation_busy == NOT_BUSY ) continue; 
 			if (noDependencies( rs->line[i].information_dependency_Qj, rs->line[i].information_dependency_Qk ) == 1) {
 				int inst_position = rs->line[i].position_destination_rb;
-				rb->line[inst_position].instruction_state = WRITE_RESULT;
+				rb->line[inst_position].instruction_state = EXECUTING;
 				// TODO ARRUMAR O RESULT AQUI O >>>
-				strcpy( rb->line[inst_position].instruction_result, "Terminado aqui.");
+				printReorderBuffer(rb);
+				fflush(stdin);
+				getchar();
+				system("cls || clear");
+
+				rb->line[inst_position].instruction_state = WRITE_RESULT;
+				strcpy( rb->line[inst_position].instruction_result, "Terminando aqui.");
+				printReorderBuffer(rb);
+				fflush(stdin);
+				getchar();
+				system("cls || clear");
 				
 				for ( j = 0; j < MAX_LINES_RS; j++ ){
+					if ( rs->line[j].reservation_busy == NOT_BUSY ) continue;
 					if ( rs->line[j].information_dependency_Qj == inst_position ) {
 						rs->line[j].value_register_read_Vj = (char*) malloc( sizeof(char) * SIZE_STR );
 						strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
