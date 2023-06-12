@@ -74,6 +74,8 @@ void initializer(char* filename){
 	
 	while ( rb->line[end].instruction_state != COMMITED ) {
 		// Adding into Reorder Buffer
+		// TODO - Prever desvio e tomar decisão de desvio aqui, tomar cuidado para conseguir recuperar a instrução
+		// se não houver desvio
 		init = rb->filled_lines % MAX_LINES;
 		end = ( (init - 1) % MAX_LINES < 0 ) ? MAX_LINES - 1 : (init - 1);
 		for ( i = init ; i != end; i = (i + 1) % MAX_LINES ) {
@@ -107,9 +109,7 @@ void initializer(char* filename){
 			int logical = 0;
 			if ( (logical = insertInstructionRS(rb->line[i].instruction, rs, rb)) != -1){
 				rb->line[i].instruction_state = ISSUE;
-			}
-					
-					
+			}		
 		}
 
 
@@ -134,6 +134,8 @@ void initializer(char* filename){
 				system("cls || clear");
 
 				rb->line[inst_position].instruction_state = WRITE_RESULT;
+				// TODO - Escrever a posição do reorder buffer no registrador destino que receber o Write
+				// Result - DEPENDENCIA FALSA (Renomeacao)
 				strcpy( rb->line[inst_position].instruction_result, "Terminando aqui.");
 				printReorderBuffer(rb);
 				fflush(stdin);
@@ -157,8 +159,8 @@ void initializer(char* filename){
 					getchar();
 					system("cls || clear");
 				}
-				// TODO LIMPAR A LINHA EXECUTADA DA ESTACAO DE RESERVA
-				//      CHECAR DESVIO
+				// TODO - LIMPAR A LINHA EXECUTADA DA ESTACAO DE RESERVA
+				//      FAZER DESVIO DE INSTRUÇÕES QUANDO 
 			}
 			printReservationStation(rs);
 			fflush(stdin);
@@ -167,8 +169,6 @@ void initializer(char* filename){
 		}
 		
 		// TODO COMMIT REORDER BUFFER
-		//      DEPENDENCIA FALSA (Renomeacao)
-		//      CHECAR DESVIO (nao sabemos se sera aqui) 
 
 
 		printReorderBuffer(rb);

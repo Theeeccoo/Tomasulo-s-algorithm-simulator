@@ -18,50 +18,50 @@ Reservation_Station* reservationStationInitializer(){
 	rs->line[0].name = "Load1";
 	rs->line[0].type = LOAD;
 	rs->line[0].reservation_busy = NOT_BUSY;
-	// rs->line[0].information_dependency_Qj = -1;
-	// rs->line[0].information_dependency_Qk = -1;
+	rs->line[0].information_dependency_Qj = -1;
+	rs->line[0].information_dependency_Qk = -1;
 	// rs->line[0].position_destination_rb = -1;
 
 	rs->line[1].name = "Load2";
 	rs->line[1].type = LOAD;
 	rs->line[1].reservation_busy = NOT_BUSY;
-	// rs->line[1].information_dependency_Qj = -1;
-	// rs->line[1].information_dependency_Qk = -1;
+	rs->line[1].information_dependency_Qj = -1;
+	rs->line[1].information_dependency_Qk = -1;
 	// rs->line[1].position_destination_rb = -1;
 
 	rs->line[2].name = "ADD1";
 	rs->line[2].type = ADD;
 	rs->line[2].reservation_busy = NOT_BUSY;
-	// rs->line[2].information_dependency_Qj = -1;
-	// rs->line[2].information_dependency_Qk = -1;
+	rs->line[2].information_dependency_Qj = -1;
+	rs->line[2].information_dependency_Qk = -1;
 	// rs->line[2].position_destination_rb = -1;
 
 	rs->line[3].name = "ADD2";
 	rs->line[3].type = ADD;
 	rs->line[3].reservation_busy = NOT_BUSY;
-	// rs->line[3].information_dependency_Qj = -1;
-	// rs->line[3].information_dependency_Qk = -1;
+	rs->line[3].information_dependency_Qj = -1;
+	rs->line[3].information_dependency_Qk = -1;
 	// rs->line[3].position_destination_rb = -1;
 
 	rs->line[4].name = "ADD3";
 	rs->line[4].type = ADD;
 	rs->line[4].reservation_busy = NOT_BUSY;
-	// rs->line[4].information_dependency_Qj = -1;
-	// rs->line[4].information_dependency_Qk = -1;
+	rs->line[4].information_dependency_Qj = -1;
+	rs->line[4].information_dependency_Qk = -1;
 	// rs->line[4].position_destination_rb = -1;
 
 	rs->line[5].name = "MULT1";
 	rs->line[5].type = MULT;
 	rs->line[5].reservation_busy = NOT_BUSY;
-	// rs->line[5].information_dependency_Qj = -1;
-	// rs->line[5].information_dependency_Qk = -1;
+	rs->line[5].information_dependency_Qj = -1;
+	rs->line[5].information_dependency_Qk = -1;
 	// rs->line[5].position_destination_rb = -1;
 
 	rs->line[6].name = "MULT2";
 	rs->line[6].type = MULT;
 	rs->line[6].reservation_busy = NOT_BUSY;
-	// rs->line[6].information_dependency_Qj = -1;
-	// rs->line[6].information_dependency_Qk = -1;
+	rs->line[6].information_dependency_Qj = -1;
+	rs->line[6].information_dependency_Qk = -1;
 	// rs->line[6].position_destination_rb = -1;
 
 	return rs;
