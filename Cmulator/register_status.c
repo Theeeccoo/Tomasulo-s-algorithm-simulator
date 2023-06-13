@@ -21,7 +21,6 @@ Register_status* registerStatusInitializer(){
 		char* F = (char*) malloc( 4 * sizeof(char) );
 		F[0] = 'F';
 		sprintf(f, "%d", i);
-		printf("%s\n", f);
 		strcat(F, f);
 
 		rStatus->column[i].field = F;

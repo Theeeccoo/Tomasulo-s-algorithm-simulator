@@ -144,3 +144,86 @@ void printInstructions(Instruction *it, char* filePath){
 		printf("%s\n", it[i].full_instruction);
 	}
 }
+
+/**
+ * @brief Computes the result of the statement that is executed
+ *
+ * @param instruction Instruction that will have its result calculated
+ * 
+ * @details As your operation computes the result of the instruction
+ * 
+ * @return Returns the calculated result
+ */
+char* calculateResult(Instruction* instruction) {
+	char* result = (char*) malloc( SIZE_STR * sizeof(char) );
+	strcpy(result, "");
+	
+	if(instruction->type == ADD) {
+		strcat(result, instruction->splitted_instruction[2]);
+		if(strcmp(instruction->splitted_instruction[0], "ADD") == 0) {
+			strcat(result, " + ");
+		} else {
+			strcat(result, " - ");
+		}
+		strcat(result, instruction->splitted_instruction[3]);
+
+	} else if(instruction->type == LOAD) {
+		if(strcmp(instruction->splitted_instruction[0], "LW") == 0) {
+			strcat(result, instruction->splitted_instruction[1]);
+			strcat(result, " = Mem[");
+			strcat(result, instruction->splitted_instruction[2]);
+			strcat(result, " + Regs[");
+			strcat(result, instruction->splitted_instruction[3]);
+			strcat(result, "]]");
+		} else {
+			strcat(result, "Mem[");
+			strcat(result, instruction->splitted_instruction[2]);
+			strcat(result, " + Regs[");
+			strcat(result, instruction->splitted_instruction[3]);
+			strcat(result, "]] = ");
+			strcat(result, instruction->splitted_instruction[1]);
+		}
+
+	} else if(instruction->type == MULT) {
+		strcat(result, instruction->splitted_instruction[2]);
+		if(strcmp(instruction->splitted_instruction[0], "MUL") == 0) {
+			strcat(result, " * ");
+		} else if(strcmp(instruction->splitted_instruction[0], "DIV") == 0){
+			strcat(result, " / ");
+		} else {
+			strcat(result, " % ");
+		}
+		strcat(result, instruction->splitted_instruction[3]);
+
+	} else if(instruction->type == BRANCH) {
+		strcat(result, instruction->splitted_instruction[1]);
+		if(strcmp(instruction->splitted_instruction[0], "BEQ") == 0) {
+			strcat(result, " == ");
+		} else {
+			strcat(result, " != ");
+		}
+		strcat(result, instruction->splitted_instruction[2]);
+
+	} else if(instruction->type == COMPARISON) {
+		strcat(result, instruction->splitted_instruction[2]);
+		strcat(result, " < ");
+		strcat(result, instruction->splitted_instruction[3]);
+
+	} else if(instruction->type == LOGICAL) {
+		strcat(result, instruction->splitted_instruction[2]);
+		if(strcmp(instruction->splitted_instruction[0], "AND") == 0) {
+			strcat(result, " && ");
+		} else if(strcmp(instruction->splitted_instruction[0], "OR") == 0) {
+			strcat(result, " || ");
+		} else if(strcmp(instruction->splitted_instruction[0], "XOR") == 0) {
+			strcat(result, " ^ ");
+		} else if(strcmp(instruction->splitted_instruction[0], "SLL") == 0) {
+			strcat(result, " << ");
+		} else {
+			strcat(result, " >> ");
+		}
+		strcat(result, instruction->splitted_instruction[3]);
+	}
+
+	return result;
+}

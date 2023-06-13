@@ -14,55 +14,48 @@
 Reservation_Station* reservationStationInitializer(){
 	Reservation_Station* rs = (Reservation_Station*) malloc( sizeof(Reservation_Station) );
 	
-	// TODO - Verificar o porque colocando os atributos abaixo como -1 dá segment fault ao rodar
 	rs->line[0].name = "Load1";
 	rs->line[0].type = LOAD;
-	rs->line[0].reservation_busy = NOT_BUSY;
-	rs->line[0].information_dependency_Qj = -1;
-	rs->line[0].information_dependency_Qk = -1;
-	// rs->line[0].position_destination_rb = -1;
 
 	rs->line[1].name = "Load2";
 	rs->line[1].type = LOAD;
-	rs->line[1].reservation_busy = NOT_BUSY;
-	rs->line[1].information_dependency_Qj = -1;
-	rs->line[1].information_dependency_Qk = -1;
-	// rs->line[1].position_destination_rb = -1;
 
 	rs->line[2].name = "ADD1";
 	rs->line[2].type = ADD;
-	rs->line[2].reservation_busy = NOT_BUSY;
-	rs->line[2].information_dependency_Qj = -1;
-	rs->line[2].information_dependency_Qk = -1;
-	// rs->line[2].position_destination_rb = -1;
 
 	rs->line[3].name = "ADD2";
 	rs->line[3].type = ADD;
-	rs->line[3].reservation_busy = NOT_BUSY;
-	rs->line[3].information_dependency_Qj = -1;
-	rs->line[3].information_dependency_Qk = -1;
-	// rs->line[3].position_destination_rb = -1;
 
 	rs->line[4].name = "ADD3";
 	rs->line[4].type = ADD;
-	rs->line[4].reservation_busy = NOT_BUSY;
-	rs->line[4].information_dependency_Qj = -1;
-	rs->line[4].information_dependency_Qk = -1;
-	// rs->line[4].position_destination_rb = -1;
 
 	rs->line[5].name = "MULT1";
 	rs->line[5].type = MULT;
-	rs->line[5].reservation_busy = NOT_BUSY;
-	rs->line[5].information_dependency_Qj = -1;
-	rs->line[5].information_dependency_Qk = -1;
-	// rs->line[5].position_destination_rb = -1;
 
 	rs->line[6].name = "MULT2";
 	rs->line[6].type = MULT;
-	rs->line[6].reservation_busy = NOT_BUSY;
-	rs->line[6].information_dependency_Qj = -1;
-	rs->line[6].information_dependency_Qk = -1;
-	// rs->line[6].position_destination_rb = -1;
+
+	rs->line[7].name = "BRANCH";
+	rs->line[7].type = BRANCH;
+
+	rs->line[8].name = "COMPARISON";
+	rs->line[8].type = COMPARISON;
+
+	rs->line[9].name = "LOGICAL1";
+	rs->line[9].type = LOGICAL;
+
+	rs->line[10].name = "LOGICAL2";
+	rs->line[10].type = LOGICAL;
+
+	rs->line[11].name = "LOGICAL3";
+	rs->line[11].type = LOGICAL;
+	
+	for(int i = 0; i < MAX_LINES_RS; i++) {
+		rs->line[i].reservation_busy = NOT_BUSY;
+		rs->line[i].information_dependency_Qj = -1;
+		rs->line[i].information_dependency_Qk = -1;
+		rs->line[i].position_destination_rb = -1;
+	}
 
 	return rs;
 }
@@ -105,13 +98,35 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 				pos = 5;
 		    }
 		}
-	} else {
+
+	} else if ( instruction->type == MULT ) {
 		for ( pos = 5; pos < 7; pos++ ) {
 		    if ( reservationStation->line[pos].reservation_busy == NOT_BUSY ) {
 				positionRS = pos;
 				pos = 7;
 		    }
 		}
+
+	} else if ( instruction->type == BRANCH ) {
+		if ( reservationStation->line[7].reservation_busy == NOT_BUSY ) {
+			positionRS = 7;
+		}
+
+	} else if ( instruction->type == COMPARISON ) {
+		    if ( reservationStation->line[8].reservation_busy == NOT_BUSY ) {
+				positionRS = 8;
+		    }
+
+	} else if ( instruction->type == LOGICAL ) {
+		for ( pos = 9; pos < MAX_LINES_RS; pos++ ) {
+		    if ( reservationStation->line[pos].reservation_busy == NOT_BUSY ) {
+				positionRS = pos;
+				pos = MAX_LINES_RS;
+		    }
+		}
+		
+	} else {
+		printf("** Error: Instruction is not supported in this simulator!**\n");
 	}
 
 	if (positionRS != -1) {
@@ -142,7 +157,14 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 		}
 
 		reservationStation->line[positionRS].position_destination_rb = instruction->reorder_buffer_position;
-		reservationStation->line[positionRS].memory_address = "Mem[32 + REG[R1]]";
+		if ( instruction->type == LOAD ) {
+			char* memory_address = (char*) malloc( SIZE_STR * sizeof(char) );
+			strcat(memory_address, instruction->splitted_instruction[2]);
+			strcat(memory_address, " + Regs[");
+			strcat(memory_address, instruction->splitted_instruction[3]);
+			strcat(memory_address, "]");
+			reservationStation->line[positionRS].memory_address = memory_address;
+		}
 	}
 
 	return positionRS;
@@ -179,15 +201,26 @@ int warDependencyIdentifier(char *analyzed_register, int position, Reorder_Buffe
 	int result = -1;
 	int init = rb->filled_lines % MAX_LINES;
 	if ( position > init ) {
+		i = (position - 1) < 0 ? (MAX_LINES - 1) : (position - 1) % MAX_LINES;
 		
 		/* Retrieving the last dependecy found */
-		for ( i = position; i != ((init - 1) % MAX_LINES); i = ((i - 1) % MAX_LINES) ) {
+		for ( ; i != ((init - 1) % MAX_LINES); i = ((i - 1) % MAX_LINES) ) {
 			char* instruction_operation = rb->line[i].instruction->splitted_instruction[0];
 
 			// If the instruction already has its result, or if it does not write to the register, there is no need to analyze the dependency
 			if ( rb->line[i].instruction_state == WRITE_RESULT || rb->line[i].instruction_state == COMMITED || (dontDoWrite(instruction_operation) == 1)) 
 				continue;
 			
+			/* TODO - 	Se uma instrução depende de duas instruções, conforme exemplo:
+						SRA R2, R5, R6
+						SW R2, 0(R1)
+						ADD R2, R2, R3
+						SUB R1, R2, R3
+
+						Se SRA for executado, o SUB tem sua dependência retirada, e ele agora precisa depender de ADD, essa atualização da dependência
+						precisa acontecer a todo momento ao executar as instruções, ou então, buscar a dependência mais próxima acima no reorder buffer.
+			*/
+
 			/* RAW (Read After Write) dependency */
 			if ( strcmp(rb->line[i].instruction->splitted_instruction[1], analyzed_register) == 0 ) {
 				result = i;

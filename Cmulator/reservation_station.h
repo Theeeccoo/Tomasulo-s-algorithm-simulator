@@ -72,7 +72,7 @@
 	 * @name Reservation station line controller
 	 */
 	/**@{*/
-	#define MAX_LINES_RS	 7	/* Maximum ammount of possible lines in reservation station*/
+	#define MAX_LINES_RS	 12	/* Maximum ammount of possible lines in reservation station*/
 	/**@}*/
 
 	typedef struct Reservation_Station {

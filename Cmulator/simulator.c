@@ -37,6 +37,15 @@ char** freeCharacterMatrix(char **matrix, int size)
     return (NULL);
 }
 
+/**
+ * @brief Decode instruction stating which functional unit it will be executed
+ *
+ * @param operation Operation that the instruction
+ * 
+ * @details Decode instruction stating which functional unit it will be executed
+ * 
+ * @return If the instruction type is supported by the simulator, its type will be returned, otherwise -1 will be returned.
+ */
 int decoder(char* operation){
 	int	resp = -1;
 
@@ -44,20 +53,34 @@ int decoder(char* operation){
 		resp = LOAD;
 	} else if ( strcmp(operation, "ADD") == 0 || strcmp(operation, "SUB") == 0 ) {
 		resp = ADD;
-	} else if ( strcmp(operation, "MULT") == 0 || strcmp(operation, "DIV") == 0 ) {
+	} else if ( strcmp(operation, "MUL") == 0 || strcmp(operation, "DIV") == 0 || strcmp(operation, "REM") == 0 ) {
 		resp = MULT;
-	} else if ( strcmp(operation, "BNE") == 0 || strcmp(operation, "beq") == 0 ) {
+	} else if ( strcmp(operation, "BNE") == 0 || strcmp(operation, "BEQ") == 0 ) {
 		resp = BRANCH;
+	} else if ( strcmp(operation, "SLT") == 0 || strcmp(operation, "SLTI") == 0 ) {
+		resp = COMPARISON;
+	} else if ( strcmp(operation, "OR") == 0 || strcmp(operation, "AND") == 0 || strcmp(operation, "XOR") == 0 || 
+				strcmp(operation, "SLL") == 0 || strcmp(operation, "SRL") == 0 || strcmp(operation, "SRA") == 0 ) {
+		resp = LOGICAL;
 	}
 
 	return resp;
 }
 
+/**
+ * @brief Checks if the statement has true dependency on another statement
+ *
+ * @param qj First read register dependency information
+ * @param qk Read second register dependency information
+ * 
+ * @details Checks if the statement has true dependency on another statement
+ * 
+ * @return If there is no dependency, 1 is returned, otherwise 0
+ */
 int noDependencies(int qj, int qk){
-	printf("(%d) %d && (%d) %d = %d\n", qj, qj == -1, qk ,qk == -1, ((qj == -1) && (qk == -1)));
+	//printf("(%d) %d && (%d) %d = %d\n", qj, qj == -1, qk ,qk == -1, ((qj == -1) && (qk == -1)));
 	return ((qj == -1) && (qk == -1));
 }
-
 
 void initializer(char* filename){
 	
@@ -76,6 +99,8 @@ void initializer(char* filename){
 		// Adding into Reorder Buffer
 		// TODO - Prever desvio e tomar decisão de desvio aqui, tomar cuidado para conseguir recuperar a instrução
 		// se não houver desvio
+
+		// TODO - Ao substituir uma instrução que já foi commitada, limpar a posição do reorder buffer no register status
 		init = rb->filled_lines % MAX_LINES;
 		end = ( (init - 1) % MAX_LINES < 0 ) ? MAX_LINES - 1 : (init - 1);
 		for ( i = init ; i != end; i = (i + 1) % MAX_LINES ) {
@@ -124,24 +149,27 @@ void initializer(char* filename){
 		// Execution 
 		for ( i = 0; i < MAX_LINES_RS; i++ ){
 			if ( rs->line[i].reservation_busy == NOT_BUSY ) continue; 
-			if (noDependencies( rs->line[i].information_dependency_Qj, rs->line[i].information_dependency_Qk ) == 1) {
+			if ((noDependencies( rs->line[i].information_dependency_Qj, rs->line[i].information_dependency_Qk ) == 1) && 
+				rb->line[rs->line[i].position_destination_rb].instruction_state == ISSUE) {
 				int inst_position = rs->line[i].position_destination_rb;
 				rb->line[inst_position].instruction_state = EXECUTING;
-				// TODO ARRUMAR O RESULT AQUI O >>>
 				printReorderBuffer(rb);
 				fflush(stdin);
 				getchar();
 				system("cls || clear");
 
-				rb->line[inst_position].instruction_state = WRITE_RESULT;
+
 				// TODO - Escrever a posição do reorder buffer no registrador destino que receber o Write
 				// Result - DEPENDENCIA FALSA (Renomeacao)
-				strcpy( rb->line[inst_position].instruction_result, "Terminando aqui.");
+				rb->line[inst_position].instruction_state = WRITE_RESULT;
+				// Get the result and write it to the reorder buffer
+				strcpy( rb->line[inst_position].instruction_result, calculateResult(rb->line[inst_position].instruction));
 				printReorderBuffer(rb);
 				fflush(stdin);
 				getchar();
 				system("cls || clear");
 				
+				// Forward of data, because the instruction was executed and its result can be used by the next instructions
 				for ( j = 0; j < MAX_LINES_RS; j++ ){
 					if ( rs->line[j].reservation_busy == NOT_BUSY ) continue;
 					if ( rs->line[j].information_dependency_Qj == inst_position ) {
@@ -159,8 +187,8 @@ void initializer(char* filename){
 					getchar();
 					system("cls || clear");
 				}
-				// TODO - LIMPAR A LINHA EXECUTADA DA ESTACAO DE RESERVA
-				//      FAZER DESVIO DE INSTRUÇÕES QUANDO 
+				// TODO - 	LIMPAR A LINHA EXECUTADA DA ESTACAO DE RESERVA
+				// TODO - CALCULAR SE HAVERA OU NÃO O DESVIO DE INSTRUÇÃO, SE SIM VERIFICAR SE INSTRUÇÕES FORAM DESCARTADAS, SE NÃO, DESCARTAR INSTRUÇÕES
 			}
 			printReservationStation(rs);
 			fflush(stdin);
@@ -168,7 +196,7 @@ void initializer(char* filename){
 			system("cls || clear");
 		}
 		
-		// TODO COMMIT REORDER BUFFER
+		// TODO - COMMIT REORDER BUFFER
 
 
 		printReorderBuffer(rb);

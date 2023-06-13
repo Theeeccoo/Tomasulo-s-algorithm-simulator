@@ -23,7 +23,7 @@
 	#define ADD     	1	/**< Operating unit add */
 	#define MULT	   	2	/**< Operating unit mult */
 	#define BRANCH	   	3	/**< Operating unit branch */
-	#define COMPARISON  	4	/**< Operating unit comparison */
+	#define COMPARISON  4	/**< Operating unit comparison */
 	#define LOGICAL	   	5	/**< Operating unit logical */
 	/**@}*/
 
@@ -51,4 +51,5 @@ extern char** readInstructions(char*, int);
 extern int numberOfLines(char*);
 extern char** splitInstruction(char*);
 extern void printInstructions(Instruction*, char*);
+extern char* calculateResult(Instruction* instruction);
 /**@}*/

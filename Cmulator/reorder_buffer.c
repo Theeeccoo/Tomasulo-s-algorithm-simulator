@@ -64,7 +64,6 @@ void printReorderBuffer(Reorder_Buffer *rb){
 		init = rb->filled_lines % MAX_LINES,
 		end = ((init - 1) < 0 ? (MAX_LINES - 1) : (init - 1));
 	printf("\n\n\nPrinting Reorder Buffer. . .\n");
-	printf("init: %d  -   end: %d\n", init, end);
 	for( i = init; i != end; i = ((i + 1) % MAX_LINES) ) {
 		printf("Entry: %d\n", i);
 		printf("Busy: %s\n", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
