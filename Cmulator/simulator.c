@@ -173,12 +173,16 @@ void initializer(char* filename){
 				for ( j = 0; j < MAX_LINES_RS; j++ ){
 					if ( rs->line[j].reservation_busy == NOT_BUSY ) continue;
 					if ( rs->line[j].information_dependency_Qj == inst_position ) {
-						rs->line[j].value_register_read_Vj = (char*) malloc( sizeof(char) * SIZE_STR );
+						if (rs->line[j].value_register_read_Vj == NULL) {
+							rs->line[j].value_register_read_Vj = (char*) malloc( sizeof(char) * SIZE_STR );
+						}
 						strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
 						rs->line[j].information_dependency_Qj = -1;
 					}
 					if ( rs->line[j].information_dependency_Qk == inst_position ) {
-						rs->line[j].value_register_read_Vk = (char*) malloc( sizeof(char) * SIZE_STR );
+						if (rs->line[j].value_register_read_Vk == NULL) {
+							rs->line[j].value_register_read_Vk = (char*) malloc( sizeof(char) * SIZE_STR );
+						}
 						strcpy( rs->line[j].value_register_read_Vk, rb->line[inst_position].instruction->splitted_instruction[1] );
 						rs->line[j].information_dependency_Qk = -1;
 					}
@@ -187,7 +191,8 @@ void initializer(char* filename){
 					getchar();
 					system("cls || clear");
 				}
-				// TODO - 	LIMPAR A LINHA EXECUTADA DA ESTACAO DE RESERVA
+				// Release reservation station that had an instruction that has already been executed
+				clearLineRS(rs, i);
 				// TODO - CALCULAR SE HAVERA OU NÃO O DESVIO DE INSTRUÇÃO, SE SIM VERIFICAR SE INSTRUÇÕES FORAM DESCARTADAS, SE NÃO, DESCARTAR INSTRUÇÕES
 			}
 			printReservationStation(rs);

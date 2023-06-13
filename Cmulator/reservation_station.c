@@ -61,6 +61,27 @@ Reservation_Station* reservationStationInitializer(){
 }
 
 /**
+ * @brief Release line containing reservation station of a functional unit
+ *
+ * @param rs Structure that contains the reserve station that will be released
+ * @param positionRS Position where the reserve station is on the structure
+ *
+ * @details Release reservation station that had an instruction that has already been executed
+ */
+void clearLineRS (Reservation_Station *rs, int positionRS) {
+	strcpy(rs->line[positionRS].instruction_op, "");
+	strcpy(rs->line[positionRS].value_register_read_Vj, "");
+	strcpy(rs->line[positionRS].value_register_read_Vk, "");
+	if (rs->line[positionRS].memory_address != NULL) {
+		strcpy(rs->line[positionRS].memory_address, "");
+	}
+	rs->line[positionRS].reservation_busy = NOT_BUSY;
+	rs->line[positionRS].information_dependency_Qj = -1;
+	rs->line[positionRS].information_dependency_Qk = -1;
+	rs->line[positionRS].position_destination_rb = -1;
+}
+
+/**
  * @brief Inserting new instruction into one of reservation station
  *
  * @param instruction to be added
@@ -148,11 +169,15 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 		}
 		
 		if ( reservationStation->line[positionRS].information_dependency_Qj == -1 ) {
-			reservationStation->line[positionRS].value_register_read_Vj = (char*) malloc ( SIZE_STR * sizeof(char) );
+			if (reservationStation->line[positionRS].value_register_read_Vj == NULL) {
+				reservationStation->line[positionRS].value_register_read_Vj = (char*) malloc ( SIZE_STR * sizeof(char) );
+			}
 			strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[2] );
 		}
 		if ( reservationStation->line[positionRS].information_dependency_Qk == -1 ) {
-			reservationStation->line[positionRS].value_register_read_Vk = (char*) malloc ( SIZE_STR * sizeof(char) );
+			if (reservationStation->line[positionRS].value_register_read_Vk == NULL) {
+				reservationStation->line[positionRS].value_register_read_Vk = (char*) malloc ( SIZE_STR * sizeof(char) );
+			}
 			strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[3] );
 		}
 
@@ -242,13 +267,13 @@ void printReservationStation(Reservation_Station *reservationStation){
 	for( i = 0; i < MAX_LINES_RS; i++ ) {
 		printf("Name: %s\n", reservationStation->line[i].name);
 		printf("Busy: %s\n", ( reservationStation->line[i].reservation_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
-		printf("Instruction Op: %s\n", reservationStation->line[i].instruction_op);
-		printf("Vj: %s\n", reservationStation->line[i].value_register_read_Vj);
-       	printf("Vk: %s\n", reservationStation->line[i].value_register_read_Vk);
+		printf("Instruction Op: %s\n", (reservationStation->line[i].instruction_op == NULL ? "(null)" : (strcmp(reservationStation->line[i].instruction_op, "") == 0 ? "(null)" : reservationStation->line[i].instruction_op) ));
+		printf("Vj: %s\n", (reservationStation->line[i].value_register_read_Vj == NULL ? "(null)" : (strcmp(reservationStation->line[i].value_register_read_Vj, "") == 0 ? "(null)" : reservationStation->line[i].value_register_read_Vj)));
+       	printf("Vk: %s\n", (reservationStation->line[i].value_register_read_Vk == NULL ? "(null)" : (strcmp(reservationStation->line[i].value_register_read_Vk, "") == 0 ? "(null)" : reservationStation->line[i].value_register_read_Vk)));
         printf("Qj: %d\n", reservationStation->line[i].information_dependency_Qj);
         printf("Qk: %d\n", reservationStation->line[i].information_dependency_Qk);
 		printf("Destination: %d\n", reservationStation->line[i].position_destination_rb);
-		printf("Memory Address: %s\n\n", reservationStation->line[i].memory_address);
+		printf("Memory Address: %s\n\n", (reservationStation->line[i].memory_address == NULL ? "(null)" : (strcmp(reservationStation->line[i].memory_address, "") == 0 ? "(null)" : reservationStation->line[i].memory_address)));
 	}
 }
 
