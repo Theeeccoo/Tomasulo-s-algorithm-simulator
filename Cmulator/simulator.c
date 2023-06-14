@@ -87,11 +87,12 @@ void initializer(char* filename){
 	Instruction *instructions = instructionsInitializer(filename);
 	Reservation_Station *rs = reservationStationInitializer();
 	Register_status *registerRename = registerStatusInitializer();
-	//int number_of_instructions = numberOfLines(filename); 
+	int number_of_instructions = numberOfLines(filename); 
 	int init = rb->filled_lines % MAX_LINES,
 	    end  = ((init - 1) % MAX_LINES < 0) ? MAX_LINES - 1 : (init - 1);
 	int i, j, old_position = 0;
 
+	printf("Number of lines: %d\n", number_of_instructions);
 	
 	printInstructions(instructions, filename);
 	
@@ -99,40 +100,42 @@ void initializer(char* filename){
 		// Adding into Reorder Buffer
 		// TODO - Prever desvio e tomar decisão de desvio aqui, tomar cuidado para conseguir recuperar a instrução
 		// se não houver desvio
+		if (old_position < number_of_instructions) {
+			init = rb->filled_lines % MAX_LINES;
+			end = ( (init - 1) % MAX_LINES < 0 ) ? (MAX_LINES - 1) : (init - 1);
+			for ( i = init ; i != end; i = (i + 1) % MAX_LINES ) {
+				if ( rb->line[i].instruction_execution != BUSY ) {
 
-		init = rb->filled_lines % MAX_LINES;
-		end = ( (init - 1) % MAX_LINES < 0 ) ? MAX_LINES - 1 : (init - 1);
-		for ( i = init ; i != end; i = (i + 1) % MAX_LINES ) {
+					// Check if free position is from an instruction that has already been committed and writes in register
+					if (rb->line[i].instruction_state == COMMITED && dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
+						// Release the instruction register that was previously in this line from the reorder buffer, as the line will receive another instruction
+						freeRegister(rb->line[i].instruction->splitted_instruction[1], registerRename);
+					}
+
+					// Insert instruction from queue into reorder buffer
+					int position = insertInstructionRB( &instructions[old_position], rb );
+					rb->line[i].instruction->reorder_buffer_position = position;
+					rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] );
+
+					old_position ++;
+				}
+			}
 			if ( rb->line[i].instruction_execution != BUSY ) {
-
 				// Check if free position is from an instruction that has already been committed and writes in register
 				if (rb->line[i].instruction_state == COMMITED && dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
 					// Release the instruction register that was previously in this line from the reorder buffer, as the line will receive another instruction
 					freeRegister(rb->line[i].instruction->splitted_instruction[1], registerRename);
 				}
-
-				// Insert instruction from queue into reorder buffer
 				int position = insertInstructionRB( &instructions[old_position], rb );
 				rb->line[i].instruction->reorder_buffer_position = position;
-				rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] );
-
+				rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] ); 
 				old_position ++;
 			}
-		}
-		if ( rb->line[i].instruction_execution != BUSY ) {
-			// Check if free position is from an instruction that has already been committed and writes in register
-			if (rb->line[i].instruction_state == COMMITED && dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
-				// Release the instruction register that was previously in this line from the reorder buffer, as the line will receive another instruction
-				freeRegister(rb->line[i].instruction->splitted_instruction[1], registerRename);
-			}
-			int position = insertInstructionRB( &instructions[old_position], rb );
-			rb->line[i].instruction->reorder_buffer_position = position;
-			rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] ); 
 		}
 
 		// Adding into Reservation Station
 		init = rb->filled_lines % MAX_LINES;
-		end = ( (init - 1) % MAX_LINES < 0 ) ? MAX_LINES - 1 : (init - 1);
+		end = ( (init - 1) % MAX_LINES < 0 ) ? (MAX_LINES - 1) : (init - 1);
 
 		for ( i = init; i != end; i = (i + 1) % MAX_LINES ) {
 			if ( rb->line[i].instruction_state == WAITING ) { 
@@ -150,7 +153,7 @@ void initializer(char* filename){
 
 		printReorderBuffer(rb);
 		printReservationStation(rs);
-		printRegisterStatus(registerRename);
+		//printRegisterStatus(registerRename);
 		
 		fflush(stdin);
 		printf("\n\n**Press Enter to continue your execution. . .\n");
@@ -165,7 +168,7 @@ void initializer(char* filename){
 				int inst_position = rs->line[i].position_destination_rb;
 				rb->line[inst_position].instruction_state = EXECUTING;
 				printReorderBuffer(rb);
-				printRegisterStatus(registerRename);
+				//printRegisterStatus(registerRename);
 				fflush(stdin);
 				getchar();
 				system("cls || clear");
@@ -178,7 +181,7 @@ void initializer(char* filename){
 				// Get the result and write it to the reorder buffer
 				strcpy( rb->line[inst_position].instruction_result, calculateResult(rb->line[inst_position].instruction));
 				printReorderBuffer(rb);
-				printRegisterStatus(registerRename);
+				//printRegisterStatus(registerRename);
 				fflush(stdin);
 				getchar();
 				system("cls || clear");
@@ -216,29 +219,32 @@ void initializer(char* filename){
 		}
 		
 		// Commit the statement from the first position of the reorder buffer if it has already been executed, as the commit needs to be in order
-		/*
 		init = rb->filled_lines % MAX_LINES;
-		if (rb->line[init].instruction_state == WRITE_RESULT) {
-			rb->line[init].instruction_state = COMMITED;
-			rb->line[init].instruction_execution = NOT_BUSY;
-			rb->filled_lines -= 1;
-		}*/
+		end  = ((init - 1) % MAX_LINES < 0) ? (MAX_LINES - 1) : (init - 1);
+		int controll_commit = 0;
+		
+		for ( i = init; i != end && controll_commit == 0; i = (i + 1) % MAX_LINES ) {
+			if (rb->line[i].instruction_state == WRITE_RESULT) {
+				rb->line[i].instruction_state = COMMITED;
+				rb->line[i].instruction_execution = NOT_BUSY;
+				// Control to have only 1 commit at a time
+				controll_commit = 1;
+			}
+		}
+		if (controll_commit == 0 && rb->line[end].instruction_state == WRITE_RESULT) {
+			rb->line[end].instruction_state = COMMITED;
+			rb->line[end].instruction_execution = NOT_BUSY;
+		}
+	
 
-		printReorderBuffer(rb);
 		printReservationStation(rs);
-		printRegisterStatus(registerRename);
+		printReorderBuffer(rb);
+		//printRegisterStatus(registerRename);
 		
 		fflush(stdin);
 		printf("\n\n**Press Enter to continue your execution. . .\n");
 		getchar();
 		system("cls || clear");
-
-		// Recalculate the last position of the circular queue for the while condition to match the current scenario of the reorder buffer
-		/*
-		init = rb->filled_lines % MAX_LINES;
-		end  = ((init - 1) % MAX_LINES < 0) ? MAX_LINES - 1 : (init - 1);
-		printf("init: %d  -  end: %d\n", init, end);
-		*/
 	}
 
 	printf("ACABOOOOOOOU!\n");
