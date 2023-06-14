@@ -96,7 +96,7 @@ void initializer(char* filename){
 	
 	printInstructions(instructions, filename);
 	
-	while ( rb->line[end].instruction_state != COMMITED ) {
+	while ( rb->line[end].instruction_state != COMMITED || old_position != number_of_instructions ) {
 		// Adding into Reorder Buffer
 		// TODO - Prever desvio e tomar decisão de desvio aqui, tomar cuidado para conseguir recuperar a instrução
 		// se não houver desvio
@@ -132,6 +132,11 @@ void initializer(char* filename){
 				old_position ++;
 			}
 		}
+		printReorderBuffer(rb);
+		fflush(stdin);
+		printf("\n\n**Press Enter to continue your execution. . .\n");
+		getchar();
+		system("cls || clear");
 
 		// Adding into Reservation Station
 		init = rb->filled_lines % MAX_LINES;
@@ -150,7 +155,7 @@ void initializer(char* filename){
 				rb->line[i].instruction_state = ISSUE;
 			}		
 		}
-
+		
 		printReorderBuffer(rb);
 		printReservationStation(rs);
 		//printRegisterStatus(registerRename);
@@ -179,7 +184,7 @@ void initializer(char* filename){
 				}
 				rb->line[inst_position].instruction_state = WRITE_RESULT;
 				// Get the result and write it to the reorder buffer
-				strcpy( rb->line[inst_position].instruction_result, calculateResult(rb->line[inst_position].instruction));
+				strcpy( rb->line[inst_position].instruction_result, calculateResult(rb->line[inst_position].instruction) );
 				printReorderBuffer(rb);
 				//printRegisterStatus(registerRename);
 				fflush(stdin);
@@ -195,18 +200,24 @@ void initializer(char* filename){
 						}
 						strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
 						rs->line[j].information_dependency_Qj = -1;
+						printf("\nFixing dependencies:\n");
+						printReservationStation(rs);
+						fflush(stdin);
+						getchar();
+						system("cls || clear");
 					}
 					if ( rs->line[j].information_dependency_Qk == inst_position ) {
 						if (rs->line[j].value_register_read_Vk == NULL) {
 							rs->line[j].value_register_read_Vk = (char*) malloc( sizeof(char) * SIZE_STR );
 						}
 						strcpy( rs->line[j].value_register_read_Vk, rb->line[inst_position].instruction->splitted_instruction[1] );
-						rs->line[j].information_dependency_Qk = -1;
+						rs->line[j].information_dependency_Qk = -1;	
+						printf("\nFixing dependencies:\n");
+						printReservationStation(rs);
+						fflush(stdin);
+						getchar();
+						system("cls || clear");
 					}
-					printReservationStation(rs);
-					fflush(stdin);
-					getchar();
-					system("cls || clear");
 				}
 				// Release reservation station that had an instruction that has already been executed
 				clearLineRS(rs, i);
@@ -223,12 +234,14 @@ void initializer(char* filename){
 		end  = ((init - 1) % MAX_LINES < 0) ? (MAX_LINES - 1) : (init - 1);
 		int controll_commit = 0;
 		
-		for ( i = init; i != end && controll_commit == 0; i = (i + 1) % MAX_LINES ) {
-			if (rb->line[i].instruction_state == WRITE_RESULT) {
+		//for ( i = init; i != end && controll_commit == 0; i = (i + 1) % MAX_LINES ) {
+		for ( i = init; i != end ; i = (i + 1) % MAX_LINES ) {
+			if ( rb->line[i].instruction_state == WRITE_RESULT ) {
 				rb->line[i].instruction_state = COMMITED;
 				rb->line[i].instruction_execution = NOT_BUSY;
-				// Control to have only 1 commit at a time
-				controll_commit = 1;
+			} else if ( rb->line[i].instruction_state != COMMITED ) {
+				// Place to stop commit 
+				controll_commit = 1;       
 			}
 		}
 		if (controll_commit == 0 && rb->line[end].instruction_state == WRITE_RESULT) {

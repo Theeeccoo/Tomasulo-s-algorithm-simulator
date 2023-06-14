@@ -221,11 +221,11 @@ int warDependencyIdentifier(char *analyzed_register, int position, Reorder_Buffe
 	int	i = 0;
 	int result = -1;
 	int init = rb->filled_lines % MAX_LINES;
-	if ( position > init ) {
+	if ( position >= 0 ) {
 		i = (position - 1) < 0 ? (MAX_LINES - 1) : (position - 1) % MAX_LINES;
 		
 		/* Retrieving the last dependecy found */
-		for ( ; i != ((init - 1) % MAX_LINES); i = ((i - 1) % MAX_LINES) ) {
+		for ( i = init ; i != position; i = ((i + 1) % MAX_LINES) ) {
 			char* instruction_operation = rb->line[i].instruction->splitted_instruction[0];
 
 			// If the instruction already has its result, or if it does not write to the register, there is no need to analyze the dependency
