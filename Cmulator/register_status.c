@@ -19,7 +19,7 @@ Register_status* registerStatusInitializer(){
 	for( int i = 0; i < MAX_REGISTERS; i++ ){
 		char* f = (char*) malloc( 4 * sizeof(char) );
 		char* F = (char*) malloc( 4 * sizeof(char) );
-		F[0] = 'F';
+		F[0] = 'R';
 		sprintf(f, "%d", i);
 		strcat(F, f);
 
@@ -89,8 +89,6 @@ int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_s
 
 	register_status->column[position_register_status].reorder_entry = entryReorderBuffer;
 	register_status->column[position_register_status].register_busy = BUSY;
-
-
 
 	return position_register_status;
 }	

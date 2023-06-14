@@ -100,10 +100,6 @@ void clearLineRS (Reservation_Station *rs, int positionRS) {
 int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation, Reorder_Buffer *rb){
 	int positionRS = -1, pos = 0;
 
-	// TODO - Caso tenha dependência falsa (escrita após escrita, ou escrita após leitura)
-	// renomear o registrador com o nome da estação de reserva, analisando todas as 
-	// instruções anteriores a esta no buffer de reordenamento
-
 	if ( instruction->type == LOAD ) {
 		for ( pos = 0; pos < 2; pos++ ) {
 		    if ( reservationStation->line[pos].reservation_busy == NOT_BUSY ) {
@@ -205,7 +201,7 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
  * @return If the instruction performs writing, 1 will be returned, otherwise 0
 */
 int dontDoWrite(char* nameInstruction) {
-	return ((strcmp(nameInstruction, "SW") == 0) || (strcmp(nameInstruction, "BEQ") == 0));
+	return ((strcmp(nameInstruction, "SW") == 0) || (strcmp(nameInstruction, "BEQ") == 0) || (strcmp(nameInstruction, "BNE") == 0));
 }
 
 /**

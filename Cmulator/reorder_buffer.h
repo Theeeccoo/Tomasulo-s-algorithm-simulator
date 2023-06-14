@@ -36,7 +36,7 @@
 		#define WAITING			0	/**< Instruction is waiting to be inserted into a unity */
 		#define ISSUE			1	/**< Instruction was sent to a functional unity */
 		#define EXECUTING		2	/**< Instruction is being executed by a unity */
-		#define	WRITE_RESULT		3	/**< Instruction is heading to the reorder buffer */
+		#define	WRITE_RESULT	3	/**< Instruction is heading to the reorder buffer */
 		#define	COMMITED		4	/**< Instruction is done */
 		/**@}*/
 		
