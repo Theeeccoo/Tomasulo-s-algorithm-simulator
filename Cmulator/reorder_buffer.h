@@ -68,11 +68,12 @@
 	 * @name Reorder Buffer line controller
 	 */
 	/**@{*/
-	#define MAX_LINES	 4	/* Maximum ammount of possible lines in reorder buffer*/
+	#define MAX_LINES	 6				/* Maximum ammount of possible lines in reorder buffer*/
 	/**@}*/
 
 	typedef struct Reorder_Buffer {
-		int filled_lines;			/**< How many lines are filled with instructions*/
+		int max_lines_rb_allocated;				/* Number of busy lines in the reorder buffer */
+		int filled_lines;						/**< How many lines are filled with instructions*/
 		Reorder_Buffer_Line line[MAX_LINES];	/**< Lines of our reorder buffer */
 	} Reorder_Buffer;
 

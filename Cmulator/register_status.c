@@ -20,8 +20,10 @@ Register_status* registerStatusInitializer(){
 		char* f = (char*) malloc( 4 * sizeof(char) );
 		char* F = (char*) malloc( 4 * sizeof(char) );
 		F[0] = 'R';
+		F[1] = '\0';
 		sprintf(f, "%d", i);
 		strcat(F, f);
+		strcat(F, "\0");
 
 		rStatus->column[i].field = F;
 		rStatus->column[i].reorder_entry = -1;
@@ -39,7 +41,6 @@ Register_status* registerStatusInitializer(){
  *
  * @return The position of the register if found, otherwise, returns -1
  */
-
 int findPosRegister(char* field, Register_status* register_status){
 	int pos = -1;
 
@@ -51,6 +52,25 @@ int findPosRegister(char* field, Register_status* register_status){
 	}
 
 	return pos;
+}
+
+/**
+ * @brief Inform the position in the reorder buffer where the value of the register must be fetched
+ *
+ * @param field is the register field
+ * @param register_status to be iterated
+ *
+ * @return Returns the position in the reorder buffer where the register is in use, otherwise -1
+ */
+int getReorderPosition(char* field, Register_status* register_status) {
+	int reorder_position = -1;
+	int position_register = findPosRegister(field, register_status);
+
+	if ( position_register != -1 && register_status->column[position_register].register_busy == BUSY) {
+		reorder_position = register_status->column[position_register].reorder_entry;
+	}
+
+	return reorder_position;
 }
 
 /**
@@ -82,10 +102,11 @@ int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_s
 		return controller;
 	}
 
+	/*
 	if ( register_status->column[position_register_status].register_busy == BUSY ){
 		printf("ERROR: The register is busy: %s!\n", fieldRegister);
 		return controller;
-	}
+	}*/
 
 	register_status->column[position_register_status].reorder_entry = entryReorderBuffer;
 	register_status->column[position_register_status].register_busy = BUSY;

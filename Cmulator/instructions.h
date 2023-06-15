@@ -23,7 +23,7 @@
 	#define ADD     	1	/**< Operating unit add */
 	#define MULT	   	2	/**< Operating unit mult */
 	#define BRANCH	   	3	/**< Operating unit branch */
-	#define COMPARISON  	4	/**< Operating unit comparison */
+	#define COMPARISON  4	/**< Operating unit comparison */
 	#define LOGICAL	   	5	/**< Operating unit logical */
 	/**@}*/
 
@@ -32,10 +32,10 @@
 		 * @name Instruction data;
 		 */
 		/**@{*/
-		int	reorder_buffer_position;	/**< Position where this instruction was inserted reorder buffer */
-		int 	type;		 		/**< Type of operating unit*/
-		int	issued; 			/**< Instruction issued? */
-		char*	full_instruction;		/**< Full instruction */
+		int		reorder_buffer_position;	/**< Position where this instruction was inserted reorder buffer */
+		int 	type;		 				/**< Type of operating unit*/
+		int		issued; 					/**< Instruction issued? */
+		char*	full_instruction;			/**< Full instruction */
 		char**	splitted_instruction;		/**< Instruction splitted */
 		/**@}*/
 	} Instruction;

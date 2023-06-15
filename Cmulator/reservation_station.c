@@ -148,7 +148,10 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 
 	if (positionRS != -1) {
 		reservationStation->line[positionRS].reservation_busy = BUSY;
-		reservationStation->line[positionRS].instruction_op = instruction->splitted_instruction[0];
+		if (reservationStation->line[positionRS].instruction_op == NULL) {
+			reservationStation->line[positionRS].instruction_op = (char*) malloc ( SIZE_STR * sizeof(char) );
+		}
+		strcpy(reservationStation->line[positionRS].instruction_op, instruction->splitted_instruction[0]);
 		if ( instruction->type == LOAD ) {
 
 			if ( strcmp(instruction->splitted_instruction[0], "SW") == 0 ) { 
@@ -220,12 +223,12 @@ int dontDoWrite(char* nameInstruction) {
 int warDependencyIdentifier(char *analyzed_register, int position, Reorder_Buffer *rb){
 	int	i = 0;
 	int result = -1;
-	int init = rb->filled_lines % MAX_LINES;
+	int init = rb->filled_lines % rb->max_lines_rb_allocated;
 	if ( position >= 0 ) {
-		i = (position - 1) < 0 ? (MAX_LINES - 1) : (position - 1) % MAX_LINES;
+		i = (position - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (position - 1) % rb->max_lines_rb_allocated;
 		
 		/* Retrieving the last dependecy found */
-		for ( i = init ; i != position; i = ((i + 1) % MAX_LINES) ) {
+		for ( i = init ; i != position; i = ((i + 1) % rb->max_lines_rb_allocated) ) {
 			char* instruction_operation = rb->line[i].instruction->splitted_instruction[0];
 
 			// If the instruction already has its result, or if it does not write to the register, there is no need to analyze the dependency

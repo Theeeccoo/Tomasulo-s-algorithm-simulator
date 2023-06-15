@@ -75,5 +75,7 @@ extern Register_status* registerStatusInitializer();
 extern int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_status* register_status);
 extern void printRegisterStatus(Register_status* register_status);
 extern int findPosRegister(char* field, Register_status* register_status);
+extern int getReorderPosition(char* field, Register_status* register_status);
 extern int freeRegister(char * fieldRegister, Register_status* register_status);
+extern char* calculateResult(Instruction* instruction);
 /**@}*/

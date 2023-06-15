@@ -13,7 +13,7 @@
 Reorder_Buffer* reorderBufferInitializer(){
 	Reorder_Buffer* rb = (Reorder_Buffer*) malloc( sizeof(Reorder_Buffer) );
 
-
+	rb->max_lines_rb_allocated = 0;
 	rb->filled_lines = 0;	
 	return rb;
 }
@@ -50,6 +50,12 @@ int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
 
 	rb->filled_lines += 1;
 
+	if (rb->filled_lines < MAX_LINES) {
+		rb->max_lines_rb_allocated = rb->filled_lines;
+	} else {
+		rb->max_lines_rb_allocated = MAX_LINES;
+	}
+
 	return position;
 }
 
@@ -61,10 +67,10 @@ int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
  */
 void printReorderBuffer(Reorder_Buffer *rb){
 	int	i = 0,
-		init = rb->filled_lines % MAX_LINES,
-		end = ((init - 1) < 0 ? (MAX_LINES - 1) : (init - 1));
+		init = rb->filled_lines % rb->max_lines_rb_allocated,
+		end = ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1));
 	printf("\n\n\nPrinting Reorder Buffer. . .\n");
-	for( i = init; i != end; i = ((i + 1) % MAX_LINES) ) {
+	for( i = init; i != end; i = ((i + 1) % rb->max_lines_rb_allocated) ) {
 		printf("Entry: %d\n", i);
 		printf("Busy: %s\n", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
 		printf("Instruction: %s\n", rb->line[i].instruction->full_instruction);
@@ -96,12 +102,12 @@ Reorder_Buffer* freesReorderBuffer(Reorder_Buffer *rb) {
     if (rb == NULL)
 		printf("** Error: Invalid reorder buffer!**\n");
         return (NULL);
-    if (MAX_LINES < 1)
+    if (rb->max_lines_rb_allocated < 1)
     {
-        printf("** Error: Invalid MAX_LINES!**\n");
+        printf("** Error: Invalid maximum rows allocated!**\n");
         return (rb);
     }
-    for (i = 0; i < MAX_LINES; i++) {
+    for (i = 0; i < rb->max_lines_rb_allocated; i++) {
 		free(rb->line[i].instruction);
 		//free(rb->line[i].instruction_destination);
 		free(rb->line[i].instruction_result);
