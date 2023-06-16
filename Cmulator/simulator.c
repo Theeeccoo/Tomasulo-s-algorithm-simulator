@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "reorder_buffer.h"
 #include "instructions.h"
 #include "reservation_station.h"
@@ -225,7 +226,9 @@ void initializer(char* filename){
 	    end  = ((init - 1) % MAX_LINES < 0) ? MAX_LINES - 1 : (init - 1);
 	int i, j, aux, old_position = 0;
 	int *position_run = (int*) calloc( MAX_LINES_RS, sizeof(int) );
-
+	clock_t start, endTime;
+	float elapsed_milliseconds;
+	start = clock();
 	printf("Number of lines: %d\n", number_of_instructions);
 	
 	printInstructions(instructions, filename);
@@ -239,8 +242,10 @@ void initializer(char* filename){
 		// Adding into Reorder Buffer
 		// TODO - Prever desvio e tomar decisão de desvio aqui, tomar cuidado para conseguir recuperar a instrução
 		// se não houver desvio
+		endTime = clock();
+		elapsed_milliseconds = ((float)(endTime - start) / CLOCKS_PER_SEC) * 1000.0;
 		init = rb->filled_lines % (rb->max_lines_rb_allocated == 0 ? MAX_LINES : rb->max_lines_rb_allocated);
-			end = ( (init - 1) % (rb->max_lines_rb_allocated == 0 ? MAX_LINES : rb->max_lines_rb_allocated) < 0 ) ? ((rb->max_lines_rb_allocated == 0 ? MAX_LINES : rb->max_lines_rb_allocated) - 1) : (init - 1);
+		end = ( (init - 1) % (rb->max_lines_rb_allocated == 0 ? MAX_LINES : rb->max_lines_rb_allocated) < 0 ) ? ((rb->max_lines_rb_allocated == 0 ? MAX_LINES : rb->max_lines_rb_allocated) - 1) : (init - 1);
 		for ( i = init ; i != end && old_position < number_of_instructions; i = (i + 1) % MAX_LINES ) {
 			if ( old_position < number_of_instructions && rb->line[i].instruction_execution != BUSY ) {
 
@@ -249,7 +254,9 @@ void initializer(char* filename){
 					// Release the instruction register that was previously in this line from the reorder buffer, as the line will receive another instruction
 					freeRegister(rb->line[i].instruction->splitted_instruction[1], registerRename);
 				}
-
+				// Insert time at which instruction was inserted into reorder buffer
+				instructions[old_position].time[WAITING] = elapsed_milliseconds;
+				
 				// Insert instruction from queue into reorder buffer
 				int position = insertInstructionRB( &instructions[old_position], rb );
 				rb->line[i].instruction->reorder_buffer_position = position;
@@ -264,6 +271,10 @@ void initializer(char* filename){
 				// Release the instruction register that was previously in this line from the reorder buffer, as the line will receive another instruction
 				freeRegister(rb->line[i].instruction->splitted_instruction[1], registerRename);
 			}
+			// Insert time at which instruction was inserted into reorder buffer
+			instructions[old_position].time[WAITING] = elapsed_milliseconds;
+
+			// Insert instruction from queue into reorder buffer
 			int position = insertInstructionRB( &instructions[old_position], rb );
 			rb->line[i].instruction->reorder_buffer_position = position;
 			rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] ); 
@@ -279,6 +290,8 @@ void initializer(char* filename){
 		system("cls || clear");
 
 		// Adding into Reservation Station
+		endTime = clock();
+		elapsed_milliseconds = ((float)(endTime - start) / CLOCKS_PER_SEC) * 1000.0;
 		init = rb->filled_lines % rb->max_lines_rb_allocated;
 		end = ( ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1)) % rb->max_lines_rb_allocated);
 		for ( i = init; i != end; i = (i + 1) % rb->max_lines_rb_allocated ) {
@@ -286,6 +299,7 @@ void initializer(char* filename){
 				int logical = 0 ;
 				if ( (logical = insertInstructionRS(rb->line[i].instruction, rs, rb)) != -1 ) {
 					rb->line[i].instruction_state = ISSUE;
+					insertTime(rb->line[i].instruction->full_instruction, instructions, ISSUE, number_of_instructions, elapsed_milliseconds);
 				}
 			}
 		}
@@ -293,6 +307,7 @@ void initializer(char* filename){
 			int logical = 0;
 			if ( (logical = insertInstructionRS(rb->line[i].instruction, rs, rb)) != -1){
 				rb->line[i].instruction_state = ISSUE;
+				insertTime(rb->line[i].instruction->full_instruction, instructions, ISSUE, number_of_instructions, elapsed_milliseconds);
 			}		
 		}
 		writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
@@ -305,6 +320,8 @@ void initializer(char* filename){
 		getchar();
 		system("cls || clear");
 
+		endTime = clock();
+		elapsed_milliseconds = ((float)(endTime - start) / CLOCKS_PER_SEC) * 1000.0;
 		aux = 0;
 		// Execution 
 		for ( i = 0; i < MAX_LINES_RS; i++ ){
@@ -313,6 +330,8 @@ void initializer(char* filename){
 				rb->line[rs->line[i].position_destination_rb].instruction_state == ISSUE) {
 				int inst_position = rs->line[i].position_destination_rb;
 				rb->line[inst_position].instruction_state = EXECUTING;
+
+				insertTime(rb->line[inst_position].instruction->full_instruction, instructions, EXECUTING, number_of_instructions, elapsed_milliseconds);
 
 				// Store reservation station positions that will have instructions being executed, in order to advance data after execution
 				position_run[aux] = i;
@@ -329,11 +348,14 @@ void initializer(char* filename){
 		system("cls || clear");
 
 		// Write Result
+		endTime = clock();
+		elapsed_milliseconds = ((float)(endTime - start) / CLOCKS_PER_SEC) * 1000.0;
 		init = rb->filled_lines % rb->max_lines_rb_allocated;
 		end = ( ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1)) % rb->max_lines_rb_allocated);
 		for ( i = init; i != end; i = (i + 1) % rb->max_lines_rb_allocated ) {
 			if ( rb->line[i].instruction_state == EXECUTING ) { 
 				rb->line[i].instruction_state = WRITE_RESULT;
+				insertTime(rb->line[i].instruction->full_instruction, instructions, WRITE_RESULT, number_of_instructions, elapsed_milliseconds);
 				// If instruction writes to register, put position of reorder buffer where instruction is in destination register
 				if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
 					insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
@@ -344,6 +366,7 @@ void initializer(char* filename){
 		}
 		if ( rb->line[i].instruction_state == EXECUTING ) {
 			rb->line[i].instruction_state = WRITE_RESULT;
+			insertTime(rb->line[i].instruction->full_instruction, instructions, WRITE_RESULT, number_of_instructions, elapsed_milliseconds);
 			// If instruction writes to register, put position of reorder buffer where instruction is in destination register
 			if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
 				insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
@@ -395,6 +418,8 @@ void initializer(char* filename){
 		system("cls || clear");
 		
 		// Commit the statement from the first position of the reorder buffer if it has already been executed, as the commit needs to be in order
+		endTime = clock();
+		elapsed_milliseconds = ((float)(endTime - start) / CLOCKS_PER_SEC) * 1000.0;
 		init = rb->filled_lines % rb->max_lines_rb_allocated;
 		end = ( ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1)) % rb->max_lines_rb_allocated);
 		int controll_commit = 0;
@@ -403,6 +428,7 @@ void initializer(char* filename){
 			if ( rb->line[i].instruction_state == WRITE_RESULT ) {
 				rb->line[i].instruction_state = COMMITED;
 				rb->line[i].instruction_execution = NOT_BUSY;
+				insertTime(rb->line[i].instruction->full_instruction, instructions, COMMITED, number_of_instructions, elapsed_milliseconds);
 			} else if ( rb->line[i].instruction_state != COMMITED ) {
 				// Place to stop commit 
 				controll_commit = 1;       
@@ -411,6 +437,7 @@ void initializer(char* filename){
 		if (controll_commit == 0 && rb->line[end].instruction_state == WRITE_RESULT) {
 			rb->line[end].instruction_state = COMMITED;
 			rb->line[end].instruction_execution = NOT_BUSY;
+			insertTime(rb->line[end].instruction->full_instruction, instructions, COMMITED, number_of_instructions, elapsed_milliseconds);
 		}
 	
 		writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
@@ -423,8 +450,7 @@ void initializer(char* filename){
 		getchar();
 		system("cls || clear");
 	}
-
-	printf("ACABOOOOOOOU!\n");
+	printTimeInstructions(instructions, number_of_instructions);
 }
 
 int main(void){

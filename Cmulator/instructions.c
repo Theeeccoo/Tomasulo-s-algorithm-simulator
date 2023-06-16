@@ -130,6 +130,7 @@ Instruction* instructionsInitializer(char* filename){
 		instructions[i].full_instruction = (char*) malloc ( SIZE_STR * sizeof(char) );
 		strcpy(instructions[i].full_instruction, instructionsRead[i]);
 		instructions[i].splitted_instruction = splitInstruction(instructionsRead[i]);
+		instructions[i].time = (float*) calloc( 5, sizeof(float) );
 	}	
 
 	return instructions;
@@ -226,4 +227,53 @@ char* calculateResult(Instruction* instruction) {
 	}
 
 	return result;
+}
+
+
+/**
+ * @brief Insert time of entry into reservation station, execution or commit
+ *
+ * @param full_instruction 		Instruction that will have its result calculated
+ * @param instructions			Structure that has all the instructions
+ * @param position				Position that informs which time is being inserted 
+ * 								in the instruction
+ * @param amount_instructions	Number of instructions in total that will be iterated
+ * @param seconds				Seconds that will be stored in the corresponding position
+ * 
+ * @details The position passed by parameter informs which time will be inserted, 
+ * 			according to stages in the reorder buffer of the instruction
+ */
+void insertTime (char* full_instruction, Instruction *instructions, int position, int amount_instructions, float seconds) {
+
+	for (int i = 0; i < amount_instructions; i++) {
+		if (strcmp(instructions[i].full_instruction, full_instruction) == 0 && instructions[i].time[position] == 0) {
+			instructions[i].time[position] = seconds;
+			i = amount_instructions;
+		}
+	}
+}
+
+/**
+ * @brief Prints all times of the instruction
+ *
+ * @param instructions			Structure that has all the instructions
+ * @param amount_instructions	Number of instructions in total that will be iterated
+ * 
+ * @details Prints all times of the instruction referring to the entry in the reorder 
+ * 			buffer, reservation station, when it was executed, when the write result 
+ * 			was done and when it was committed
+ */
+void printTimeInstructions(Instruction *instructions, int amount_instructions) {
+
+	printf("\nInstruction times:\n\n");
+	printf("Instruction\t\tWAITING\t\tISSUE\t\tEXECUTING\tWRITE_RESULT\tCOMMITED\n");
+
+	for (int i = 0; i < amount_instructions; i++) {
+		printf("%s\t\t", instructions[i].full_instruction);
+		printf("%.2fms\t\t",instructions[i].time[0]);
+		printf("%.2fms\t\t",instructions[i].time[1]);
+		printf("%.2fms\t\t",instructions[i].time[2]);
+		printf("%.2fms\t\t",instructions[i].time[3]);
+		printf("%.2fms\n",instructions[i].time[4]);
+	}
 }

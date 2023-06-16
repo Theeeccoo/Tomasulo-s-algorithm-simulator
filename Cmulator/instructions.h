@@ -37,6 +37,7 @@
 		int		issued; 					/**< Instruction issued? */
 		char*	full_instruction;			/**< Full instruction */
 		char**	splitted_instruction;		/**< Instruction splitted */
+		float*	time;						/**< Time when instruction was sent to reorder buffer, reservation station, executed and committed */
 		/**@}*/
 	} Instruction;
 
@@ -52,4 +53,6 @@ extern int numberOfLines(char*);
 extern char** splitInstruction(char*);
 extern void printInstructions(Instruction*, char*);
 extern char* calculateResult(Instruction* instruction);
+extern void insertTime (char* full_instruction, Instruction *instructions, int position, int amount_instructions, float seconds);
+extern void printTimeInstructions(Instruction *instructions, int amount_instructions);
 /**@}*/
