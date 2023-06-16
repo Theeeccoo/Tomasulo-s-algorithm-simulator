@@ -67,6 +67,123 @@ int decoder(char* operation){
 }
 
 /**
+ * @brief Write simulator tables to file
+ *
+ * @param fileName 			Name of the file to be written
+ * @param writing_mode		File writing mode, whether it will erase and start writing from 
+ * 							scratch, or whether it will be added at the end of the file
+ * @param rb				Structure that contains the reorder buffer table
+ * @param rs				Structure containing reservation station table
+ * @param registerRename	Structure containing register status table
+ * 
+ * @details Write reorder buffer, reservation station and register status table to file
+ */
+void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, Reservation_Station *rs, Register_status *registerRename)
+{
+    FILE *arquivo = fopen(fileName, writing_mode);
+
+	if (arquivo != NULL) {
+		// Write reorder buffer table
+		int	i = 0,
+		init = rb->filled_lines % rb->max_lines_rb_allocated,
+		end = ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1));
+		fprintf(arquivo, "%s", "\t\t\t\t\t\t\t\t\t\t\t\t\t\tReorder Buffer\n\n");
+		fprintf(arquivo, "%s",  "Entry\tBusy\tInstruction\t\t\t\tState\t\t\tDestination\t\tValue\n");
+		for( i = init; i != end; i = ((i + 1) % rb->max_lines_rb_allocated) ) {
+			fprintf(arquivo, "  %d\t\t", i);
+			fprintf(arquivo, "%s\t\t", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
+			fprintf(arquivo, "%s\t\t", rb->line[i].instruction->full_instruction);
+			if (rb->line[i].instruction->type == LOAD) {
+				fprintf(arquivo, "\t");
+			}
+			fprintf(arquivo, "%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
+			if (rb->line[i].instruction_state < EXECUTING) {
+				fprintf(arquivo, "\t\t");
+			} else if (rb->line[i].instruction_state == EXECUTING || rb->line[i].instruction_state == COMMITED) {
+				fprintf(arquivo, "\t");
+			}
+			fprintf(arquivo, "    %s\t\t\t\t", rb->line[i].instruction->splitted_instruction[1]);
+			fprintf(arquivo, "%s\n", rb->line[i].instruction_result);
+		}
+		// Write the last position alone of reorder buffer
+		fprintf(arquivo, "  %d\t\t", end);
+		fprintf(arquivo, "%s\t\t", ( rb->line[end].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
+		fprintf(arquivo, "%s\t\t", rb->line[end].instruction->full_instruction);
+		fprintf(arquivo, "%s\t", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
+		if (rb->line[end].instruction_state < EXECUTING) {
+			fprintf(arquivo, "\t\t");
+		} else if (rb->line[end].instruction_state == EXECUTING || rb->line[end].instruction_state == COMMITED) {
+			fprintf(arquivo, "\t");
+		}
+		fprintf(arquivo, "    %s\t\t\t\t", rb->line[end].instruction->splitted_instruction[1]);
+		fprintf(arquivo, "%s\n", rb->line[end].instruction_result);
+
+
+		// Write reservation station table
+		fprintf(arquivo, "%s", "\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tReservation Station\n\n");
+		fprintf(arquivo, "%s", "Name\t\t\t\t\tBusy\t\tOp\t\t\tVj\t\t\t\tVk\t\t\t\tQj\t\tQk\t\tDest\t\tAddress\n");
+		for( i = 0; i < MAX_LINES_RS; i++ ) {
+			fprintf(arquivo, "%s\t\t", rs->line[i].name);
+			if(i < 7) {
+				fprintf(arquivo, "\t\t\t");
+			} else if (i == 7) {
+				fprintf(arquivo, "\t\t");
+			} else if (i > 8) {
+				fprintf(arquivo, "\t");
+			}
+			fprintf(arquivo, "%s\t\t\t", ( rs->line[i].reservation_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
+			fprintf(arquivo, "%s\t\t\t", (rs->line[i].instruction_op == NULL ? "-" : (strcmp(rs->line[i].instruction_op, "") == 0 ? "-" : rs->line[i].instruction_op) ));
+			if (rs->line[i].instruction_op == NULL || strcmp(rs->line[i].instruction_op, "") == 0) {
+				fprintf(arquivo, "\t");
+			}
+			fprintf(arquivo, "%s\t\t\t\t", (rs->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(rs->line[i].value_register_read_Vj, "") == 0 ? "-" : rs->line[i].value_register_read_Vj)));
+			if (rs->line[i].value_register_read_Vj == NULL || strcmp(rs->line[i].value_register_read_Vj, "") == 0) {
+				fprintf(arquivo, "\t");
+			}
+			fprintf(arquivo, "%s\t\t\t\t", (rs->line[i].value_register_read_Vk == NULL ? "-" : (strcmp(rs->line[i].value_register_read_Vk, "") == 0 ? "-" : rs->line[i].value_register_read_Vk)));
+			if (rs->line[i].value_register_read_Vk == NULL || strcmp(rs->line[i].value_register_read_Vk, "") == 0) {
+				fprintf(arquivo, "\t");
+			}
+			fprintf(arquivo, "%d\t\t", rs->line[i].information_dependency_Qj);
+			if (rs->line[i].information_dependency_Qj != -1) {
+				fprintf(arquivo, "\t");
+			}
+			fprintf(arquivo, "%d\t\t", rs->line[i].information_dependency_Qk);
+			fprintf(arquivo, " %d\t\t\t", rs->line[i].position_destination_rb);
+			fprintf(arquivo, "%s\n", (rs->line[i].memory_address == NULL ? "-" : (strcmp(rs->line[i].memory_address, "") == 0 ? "-" : rs->line[i].memory_address)));
+		}
+
+
+		// Write register status table
+		i = 0;
+		int aux = 0;
+		fprintf(arquivo, "\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRegister Status\n");
+
+		while (i < MAX_REGISTERS) {
+			aux = i;
+			fprintf(arquivo, "\nField:\t\t\t");
+			for (aux = i; aux < (i + 8) && i < MAX_REGISTERS; aux++) {
+				fprintf(arquivo, "%s\t\t\t", registerRename->column[aux].field);
+			}
+			fprintf(arquivo, "\nReorder#:\t\t");
+			for (aux = i; aux < (i + 8) && i < MAX_REGISTERS; aux++) {
+				fprintf(arquivo, "%d\t\t\t", registerRename->column[aux].reorder_entry);
+			}
+			fprintf(arquivo, "\nBusy:\t\t\t\t");
+			for (aux = i; aux < (i + 8) && i < MAX_REGISTERS; aux++) {
+				fprintf(arquivo, "%s\t\t\t", ( registerRename->column[aux].register_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
+			}
+			fprintf(arquivo, "\n");
+			i = i + 8;
+		}
+
+		fprintf(arquivo, "%s\n\n", "_____________________________________________________________________________________________________________");
+	}
+
+    fclose(arquivo);
+}
+
+/**
  * @brief Checks if the statement has true dependency on another statement
  *
  * @param qj First read register dependency information
@@ -93,6 +210,7 @@ void initializer(char* filename){
 	printf("Number of lines: %d\n", number_of_instructions);
 	
 	printInstructions(instructions, filename);
+	//writeTablesToFile("tables.txt", "wt", rb, rs, registerRename);
 	
 	while ( rb->line[end].instruction_state != COMMITED || old_position != number_of_instructions ) {
 		// Adding into Reorder Buffer
@@ -128,7 +246,7 @@ void initializer(char* filename){
 			rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] ); 
 			old_position ++;
 		}
-
+		//writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 		printReorderBuffer(rb);
 		fflush(stdin);
 		printf("\n\n**Press Enter to continue your execution. . .\n");
@@ -151,7 +269,7 @@ void initializer(char* filename){
 				rb->line[i].instruction_state = ISSUE;
 			}		
 		}
-		
+		writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 		printReorderBuffer(rb);
 		printReservationStation(rs);
 		printRegisterStatus(registerRename);
@@ -168,6 +286,7 @@ void initializer(char* filename){
 				rb->line[rs->line[i].position_destination_rb].instruction_state == ISSUE) {
 				int inst_position = rs->line[i].position_destination_rb;
 				rb->line[inst_position].instruction_state = EXECUTING;
+				writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 				printReorderBuffer(rb);
 				printRegisterStatus(registerRename);
 				fflush(stdin);
@@ -175,6 +294,7 @@ void initializer(char* filename){
 				system("cls || clear");
 
 				rb->line[inst_position].instruction_state = WRITE_RESULT;
+				writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 				printReorderBuffer(rb);
 				printRegisterStatus(registerRename);
 				fflush(stdin);
@@ -191,6 +311,7 @@ void initializer(char* filename){
 						strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
 						rs->line[j].information_dependency_Qj = -1;
 						printf("\nFixing dependencies:\n");
+						writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 						printReservationStation(rs);
 						fflush(stdin);
 						getchar();
@@ -202,6 +323,7 @@ void initializer(char* filename){
 						}
 						strcpy( rs->line[j].value_register_read_Vk, rb->line[inst_position].instruction->splitted_instruction[1] );
 						rs->line[j].information_dependency_Qk = -1;	
+						writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 						printf("\nFixing dependencies:\n");
 						printReservationStation(rs);
 						fflush(stdin);
@@ -213,6 +335,7 @@ void initializer(char* filename){
 				clearLineRS(rs, i);
 				// TODO - CALCULAR SE HAVERA OU NÃO O DESVIO DE INSTRUÇÃO, SE SIM VERIFICAR SE INSTRUÇÕES FORAM DESCARTADAS, SE NÃO, DESCARTAR INSTRUÇÕES
 			}
+			writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 			printReservationStation(rs);
 			fflush(stdin);
 			getchar();
@@ -259,7 +382,7 @@ void initializer(char* filename){
 			rb->line[end].instruction_execution = NOT_BUSY;
 		}
 	
-
+		writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 		printReservationStation(rs);
 		printReorderBuffer(rb);
 		printRegisterStatus(registerRename);
