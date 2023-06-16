@@ -262,17 +262,21 @@ int warDependencyIdentifier(char *analyzed_register, int position, Reorder_Buffe
  */
 void printReservationStation(Reservation_Station *reservationStation){
 	int	i = 0;
-	printf("\n\n\nPrinting Reservation Station. . .\n");
+	printf("\n\t\t\t\t\tReservation Station\n\n");
+	printf("  Name\t\tBusy\tOp\t\tVj\t\tVk\t\tQj\tQk\tDest\tAddress\n");
 	for( i = 0; i < MAX_LINES_RS; i++ ) {
-		printf("Name: %s\n", reservationStation->line[i].name);
-		printf("Busy: %s\n", ( reservationStation->line[i].reservation_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
-		printf("Instruction Op: %s\n", (reservationStation->line[i].instruction_op == NULL ? "(null)" : (strcmp(reservationStation->line[i].instruction_op, "") == 0 ? "(null)" : reservationStation->line[i].instruction_op) ));
-		printf("Vj: %s\n", (reservationStation->line[i].value_register_read_Vj == NULL ? "(null)" : (strcmp(reservationStation->line[i].value_register_read_Vj, "") == 0 ? "(null)" : reservationStation->line[i].value_register_read_Vj)));
-       	printf("Vk: %s\n", (reservationStation->line[i].value_register_read_Vk == NULL ? "(null)" : (strcmp(reservationStation->line[i].value_register_read_Vk, "") == 0 ? "(null)" : reservationStation->line[i].value_register_read_Vk)));
-        printf("Qj: %d\n", reservationStation->line[i].information_dependency_Qj);
-        printf("Qk: %d\n", reservationStation->line[i].information_dependency_Qk);
-		printf("Destination: %d\n", reservationStation->line[i].position_destination_rb);
-		printf("Memory Address: %s\n\n", (reservationStation->line[i].memory_address == NULL ? "(null)" : (strcmp(reservationStation->line[i].memory_address, "") == 0 ? "(null)" : reservationStation->line[i].memory_address)));
+		printf("  %s\t", reservationStation->line[i].name);
+		if(i <= 6) {
+			printf("\t");
+		}
+		printf("%s\t", ( reservationStation->line[i].reservation_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
+		printf("%s\t\t", (reservationStation->line[i].instruction_op == NULL ? "-" : (strcmp(reservationStation->line[i].instruction_op, "") == 0 ? "-" : reservationStation->line[i].instruction_op) ));
+		printf("%s\t\t", (reservationStation->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(reservationStation->line[i].value_register_read_Vj, "") == 0 ? "-" : reservationStation->line[i].value_register_read_Vj)));
+       	printf("%s\t\t", (reservationStation->line[i].value_register_read_Vk == NULL ? "-" : (strcmp(reservationStation->line[i].value_register_read_Vk, "") == 0 ? "-" : reservationStation->line[i].value_register_read_Vk)));
+        printf("%d\t", reservationStation->line[i].information_dependency_Qj);
+        printf("%d\t", reservationStation->line[i].information_dependency_Qk);
+		printf(" %d\t", reservationStation->line[i].position_destination_rb);
+		printf("%s\n", (reservationStation->line[i].memory_address == NULL ? "-" : (strcmp(reservationStation->line[i].memory_address, "") == 0 ? "-" : reservationStation->line[i].memory_address)));
 	}
 }
 

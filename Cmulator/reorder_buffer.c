@@ -69,24 +69,29 @@ void printReorderBuffer(Reorder_Buffer *rb){
 	int	i = 0,
 		init = rb->filled_lines % rb->max_lines_rb_allocated,
 		end = ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1));
-	printf("\n\n\nPrinting Reorder Buffer. . .\n");
+	printf("\n\n\t\t\t\t\tReorder Buffer\n\n");
+	printf("  Entry\t\tBusy\tInstruction\t\tState\t\tDestination\tValue\n");
 	for( i = init; i != end; i = ((i + 1) % rb->max_lines_rb_allocated) ) {
-		printf("Entry: %d\n", i);
-		printf("Busy: %s\n", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
-		printf("Instruction: %s\n", rb->line[i].instruction->full_instruction);
-		printf("State: %s\n", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
-		printf("Destination: %s\n", rb->line[i].instruction->splitted_instruction[1]);
-		printf("Values: %s\n", rb->line[i].instruction_result);
-		printf("\n");
+		printf("    %d\t\t", i);
+		printf("%s\t", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
+		printf("%s\t\t", rb->line[i].instruction->full_instruction);
+		printf("%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
+		if (rb->line[i].instruction_state < 2) {
+			printf("\t");
+		}
+		printf("    %s\t\t", rb->line[i].instruction->splitted_instruction[1]);
+		printf("%s\n", rb->line[i].instruction_result);
 	}
 	// Print the last position alone
-	printf("Entry: %d\n", end);
-	printf("Busy: %s\n", ( rb->line[end].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
-	printf("Instruction: %s\n", rb->line[end].instruction->full_instruction);
-	printf("State: %s\n", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
-	printf("Destination: %s\n", rb->line[end].instruction->splitted_instruction[1]);
-	printf("Values: %s\n", rb->line[end].instruction_result);
-	printf("\n");
+	printf("    %d\t\t", end);
+	printf("%s\t", ( rb->line[end].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
+	printf("%s\t\t", rb->line[end].instruction->full_instruction);
+	printf("%s\t", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
+	if (rb->line[end].instruction_state < 2) {
+		printf("\t");
+	}
+	printf("    %s\t\t", rb->line[end].instruction->splitted_instruction[1]);
+	printf("%s\n", rb->line[end].instruction_result);
 }
 
 /**
