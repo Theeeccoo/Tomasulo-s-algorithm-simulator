@@ -88,36 +88,47 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 		init = rb->filled_lines % rb->max_lines_rb_allocated,
 		end = ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1));
 		fprintf(arquivo, "%s", "\t\t\t\t\t\t\t\t\t\t\t\t\t\tReorder Buffer\n\n");
-		fprintf(arquivo, "%s",  "Entry\tBusy\tInstruction\t\t\t\tState\t\t\tDestination\t\tValue\n");
+		fprintf(arquivo, "%s",  "Entry\tBusy\tInstruction\t\t\t\tState\t\t\t\t\tDestination\t\tValue\n");
+		
 		for( i = init; i != end; i = ((i + 1) % rb->max_lines_rb_allocated) ) {
 			fprintf(arquivo, "  %d\t\t", i);
 			fprintf(arquivo, "%s\t\t", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
 			fprintf(arquivo, "%s\t\t", rb->line[i].instruction->full_instruction);
-			if (rb->line[i].instruction->type == LOAD) {
+			if (rb->line[i].instruction->type == LOAD || strcmp(rb->line[i].instruction->splitted_instruction[0], "OR") == 0 ) {
 				fprintf(arquivo, "\t");
 			}
 			fprintf(arquivo, "%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
-			if (rb->line[i].instruction_state < EXECUTING) {
-				fprintf(arquivo, "\t\t");
+			if (rb->line[i].instruction_state == ISSUE) {
+				fprintf(arquivo, "\t\t\t\t");
+			} else if (rb->line[i].instruction_state == WAITING) {
+				fprintf(arquivo, "\t\t\t");
 			} else if (rb->line[i].instruction_state == EXECUTING || rb->line[i].instruction_state == COMMITED) {
-				fprintf(arquivo, "\t");
+				fprintf(arquivo, "\t\t");
 			}
 			fprintf(arquivo, "    %s\t\t\t\t", rb->line[i].instruction->splitted_instruction[1]);
 			fprintf(arquivo, "%s\n", rb->line[i].instruction_result);
 		}
+		
 		// Write the last position alone of reorder buffer
 		fprintf(arquivo, "  %d\t\t", end);
 		fprintf(arquivo, "%s\t\t", ( rb->line[end].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
 		fprintf(arquivo, "%s\t\t", rb->line[end].instruction->full_instruction);
+		
+		if (rb->line[end].instruction->type == LOAD || strcmp(rb->line[end].instruction->splitted_instruction[0], "OR") == 0 ) {
+				fprintf(arquivo, "\t");
+		}
+			
 		fprintf(arquivo, "%s\t", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
-		if (rb->line[end].instruction_state < EXECUTING) {
-			fprintf(arquivo, "\t\t");
+		if (rb->line[end].instruction_state == ISSUE) {
+			fprintf(arquivo, "\t\t\t\t");
+		} else if (rb->line[end].instruction_state == WAITING) {
+			fprintf(arquivo, "\t\t\t");
 		} else if (rb->line[end].instruction_state == EXECUTING || rb->line[end].instruction_state == COMMITED) {
-			fprintf(arquivo, "\t");
+			fprintf(arquivo, "\t\t");
 		}
 		fprintf(arquivo, "    %s\t\t\t\t", rb->line[end].instruction->splitted_instruction[1]);
 		fprintf(arquivo, "%s\n", rb->line[end].instruction_result);
-
+		
 
 		// Write reservation station table
 		fprintf(arquivo, "%s", "\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tReservation Station\n\n");
@@ -132,8 +143,10 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 				fprintf(arquivo, "\t");
 			}
 			fprintf(arquivo, "%s\t\t\t", ( rs->line[i].reservation_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
-			fprintf(arquivo, "%s\t\t\t", (rs->line[i].instruction_op == NULL ? "-" : (strcmp(rs->line[i].instruction_op, "") == 0 ? "-" : rs->line[i].instruction_op) ));
+			fprintf(arquivo, "%s\t\t", (rs->line[i].instruction_op == NULL ? "-" : (strcmp(rs->line[i].instruction_op, "") == 0 ? "-" : rs->line[i].instruction_op) ));
 			if (rs->line[i].instruction_op == NULL || strcmp(rs->line[i].instruction_op, "") == 0) {
+				fprintf(arquivo, "\t\t");
+			} else if (strcmp(rs->line[i].instruction_op, "SLTI") != 0) {
 				fprintf(arquivo, "\t");
 			}
 			fprintf(arquivo, "%s\t\t\t\t", (rs->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(rs->line[i].value_register_read_Vj, "") == 0 ? "-" : rs->line[i].value_register_read_Vj)));
@@ -149,10 +162,12 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 				fprintf(arquivo, "\t");
 			}
 			fprintf(arquivo, "%d\t\t", rs->line[i].information_dependency_Qk);
+			if (rs->line[i].information_dependency_Qk != -1) {
+				fprintf(arquivo, "\t");
+			}
 			fprintf(arquivo, " %d\t\t\t", rs->line[i].position_destination_rb);
 			fprintf(arquivo, "%s\n", (rs->line[i].memory_address == NULL ? "-" : (strcmp(rs->line[i].memory_address, "") == 0 ? "-" : rs->line[i].memory_address)));
 		}
-
 
 		// Write register status table
 		i = 0;
@@ -168,6 +183,9 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 			fprintf(arquivo, "\nReorder#:\t\t");
 			for (aux = i; aux < (i + 8) && i < MAX_REGISTERS; aux++) {
 				fprintf(arquivo, "%d\t\t\t", registerRename->column[aux].reorder_entry);
+				if (registerRename->column[aux].reorder_entry != -1) {
+					fprintf(arquivo, "\t");
+				}
 			}
 			fprintf(arquivo, "\nBusy:\t\t\t\t");
 			for (aux = i; aux < (i + 8) && i < MAX_REGISTERS; aux++) {
@@ -205,12 +223,17 @@ void initializer(char* filename){
 	int number_of_instructions = numberOfLines(filename);
 	int init = rb->filled_lines % MAX_LINES,
 	    end  = ((init - 1) % MAX_LINES < 0) ? MAX_LINES - 1 : (init - 1);
-	int i, j, old_position = 0;
+	int i, j, aux, old_position = 0;
+	int *position_run = (int*) calloc( MAX_LINES_RS, sizeof(int) );
 
 	printf("Number of lines: %d\n", number_of_instructions);
 	
 	printInstructions(instructions, filename);
-	//writeTablesToFile("tables.txt", "wt", rb, rs, registerRename);
+
+	// Initialize vector that will store positions that will be executed, to later advance data
+	for (i = 0; i < MAX_LINES_RS; i++) {
+		position_run[i] = -1;
+	}
 	
 	while ( rb->line[end].instruction_state != COMMITED || old_position != number_of_instructions ) {
 		// Adding into Reorder Buffer
@@ -246,8 +269,10 @@ void initializer(char* filename){
 			rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] ); 
 			old_position ++;
 		}
-		//writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
 		printReorderBuffer(rb);
+		printReservationStation(rs);
+		printRegisterStatus(registerRename);
+
 		fflush(stdin);
 		printf("\n\n**Press Enter to continue your execution. . .\n");
 		getchar();
@@ -259,8 +284,9 @@ void initializer(char* filename){
 		for ( i = init; i != end; i = (i + 1) % rb->max_lines_rb_allocated ) {
 			if ( rb->line[i].instruction_state == WAITING ) { 
 				int logical = 0 ;
-				if ( (logical = insertInstructionRS(rb->line[i].instruction, rs, rb)) != -1 )
+				if ( (logical = insertInstructionRS(rb->line[i].instruction, rs, rb)) != -1 ) {
 					rb->line[i].instruction_state = ISSUE;
+				}
 			}
 		}
 		if ( rb->line[i].instruction_state == WAITING ) {
@@ -279,6 +305,7 @@ void initializer(char* filename){
 		getchar();
 		system("cls || clear");
 
+		aux = 0;
 		// Execution 
 		for ( i = 0; i < MAX_LINES_RS; i++ ){
 			if ( rs->line[i].reservation_busy == NOT_BUSY ) continue; 
@@ -286,66 +313,27 @@ void initializer(char* filename){
 				rb->line[rs->line[i].position_destination_rb].instruction_state == ISSUE) {
 				int inst_position = rs->line[i].position_destination_rb;
 				rb->line[inst_position].instruction_state = EXECUTING;
-				writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
-				printReorderBuffer(rb);
-				printRegisterStatus(registerRename);
-				fflush(stdin);
-				getchar();
-				system("cls || clear");
 
-				rb->line[inst_position].instruction_state = WRITE_RESULT;
-				writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
-				printReorderBuffer(rb);
-				printRegisterStatus(registerRename);
-				fflush(stdin);
-				getchar();
-				system("cls || clear");
-				
-				// Forward of data, because the instruction was executed and its result can be used by the next instructions
-				for ( j = 0; j < MAX_LINES_RS; j++ ){
-					if ( rs->line[j].reservation_busy == NOT_BUSY ) continue;
-					if ( rs->line[j].information_dependency_Qj == inst_position ) {
-						if (rs->line[j].value_register_read_Vj == NULL) {
-							rs->line[j].value_register_read_Vj = (char*) malloc( sizeof(char) * SIZE_STR );
-						}
-						strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
-						rs->line[j].information_dependency_Qj = -1;
-						printf("\nFixing dependencies:\n");
-						writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
-						printReservationStation(rs);
-						fflush(stdin);
-						getchar();
-						system("cls || clear");
-					}
-					if ( rs->line[j].information_dependency_Qk == inst_position ) {
-						if (rs->line[j].value_register_read_Vk == NULL) {
-							rs->line[j].value_register_read_Vk = (char*) malloc( sizeof(char) * SIZE_STR );
-						}
-						strcpy( rs->line[j].value_register_read_Vk, rb->line[inst_position].instruction->splitted_instruction[1] );
-						rs->line[j].information_dependency_Qk = -1;	
-						writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
-						printf("\nFixing dependencies:\n");
-						printReservationStation(rs);
-						fflush(stdin);
-						getchar();
-						system("cls || clear");
-					}
-				}
-				// Release reservation station that had an instruction that has already been executed
-				clearLineRS(rs, i);
-				// TODO - CALCULAR SE HAVERA OU NÃO O DESVIO DE INSTRUÇÃO, SE SIM VERIFICAR SE INSTRUÇÕES FORAM DESCARTADAS, SE NÃO, DESCARTAR INSTRUÇÕES
+				// Store reservation station positions that will have instructions being executed, in order to advance data after execution
+				position_run[aux] = i;
+				aux++;
 			}
-			writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
-			printReservationStation(rs);
-			fflush(stdin);
-			getchar();
-			system("cls || clear");
 		}
+		writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
+		printReorderBuffer(rb);
+		printReservationStation(rs);
+		printRegisterStatus(registerRename);
+		
+		fflush(stdin);
+		getchar();
+		system("cls || clear");
 
+		// Write Result
 		init = rb->filled_lines % rb->max_lines_rb_allocated;
 		end = ( ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1)) % rb->max_lines_rb_allocated);
 		for ( i = init; i != end; i = (i + 1) % rb->max_lines_rb_allocated ) {
-			if ( rb->line[i].instruction_state == WRITE_RESULT ) { 
+			if ( rb->line[i].instruction_state == EXECUTING ) { 
+				rb->line[i].instruction_state = WRITE_RESULT;
 				// If instruction writes to register, put position of reorder buffer where instruction is in destination register
 				if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
 					insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
@@ -354,7 +342,8 @@ void initializer(char* filename){
 				strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction) );
 			}
 		}
-		if ( rb->line[i].instruction_state == WRITE_RESULT ) {
+		if ( rb->line[i].instruction_state == EXECUTING ) {
+			rb->line[i].instruction_state = WRITE_RESULT;
 			// If instruction writes to register, put position of reorder buffer where instruction is in destination register
 			if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
 				insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
@@ -362,6 +351,48 @@ void initializer(char* filename){
 			// Get the result and write it to the reorder buffer
 			strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction) );
 		}
+
+		// Forward of data, because the instruction was executed and its result can be used by the next instructions
+		aux = 0;
+		while (position_run[aux] != -1){
+			i = position_run[aux];
+			int inst_position = rs->line[i].position_destination_rb;
+
+			for ( j = 0; j < MAX_LINES_RS; j++ ){
+				if ( rs->line[j].reservation_busy == NOT_BUSY ) continue;
+				if ( rs->line[j].information_dependency_Qj == inst_position ) {
+					if (rs->line[j].value_register_read_Vj == NULL) {
+						rs->line[j].value_register_read_Vj = (char*) malloc( sizeof(char) * SIZE_STR );
+					}
+					strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
+					rs->line[j].information_dependency_Qj = -1;
+				}
+				if ( rs->line[j].information_dependency_Qk == inst_position ) {
+					if (rs->line[j].value_register_read_Vk == NULL) {
+						rs->line[j].value_register_read_Vk = (char*) malloc( sizeof(char) * SIZE_STR );
+					}
+					strcpy( rs->line[j].value_register_read_Vk, rb->line[inst_position].instruction->splitted_instruction[1] );
+					rs->line[j].information_dependency_Qk = -1;	
+				}
+			}
+			// Release reservation station that had an instruction that has already been executed
+			clearLineRS(rs, i);
+			aux++;
+			// TODO - CALCULAR SE HAVERA OU NÃO O DESVIO DE INSTRUÇÃO, SE SIM VERIFICAR SE INSTRUÇÕES FORAM DESCARTADAS, SE NÃO, DESCARTAR INSTRUÇÕES
+		}
+
+		// Initialize vector that will store positions that will be executed, to later advance data
+		for (i = 0; i < MAX_LINES_RS; i++) {
+			position_run[i] = -1;
+		}
+		
+		writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
+		printReorderBuffer(rb);
+		printReservationStation(rs);
+		printRegisterStatus(registerRename);
+		fflush(stdin);
+		getchar();
+		system("cls || clear");
 		
 		// Commit the statement from the first position of the reorder buffer if it has already been executed, as the commit needs to be in order
 		init = rb->filled_lines % rb->max_lines_rb_allocated;
@@ -383,8 +414,8 @@ void initializer(char* filename){
 		}
 	
 		writeTablesToFile("tables.txt", "a", rb, rs, registerRename);
-		printReservationStation(rs);
 		printReorderBuffer(rb);
+		printReservationStation(rs);
 		printRegisterStatus(registerRename);
 		
 		fflush(stdin);

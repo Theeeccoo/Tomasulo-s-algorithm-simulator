@@ -179,7 +179,7 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 			}
 			strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[3] );
 		}
-
+		
 		reservationStation->line[positionRS].position_destination_rb = instruction->reorder_buffer_position;
 		if ( instruction->type == LOAD ) {
 			char* memory_address = (char*) malloc( SIZE_STR * sizeof(char) );
@@ -234,16 +234,6 @@ int warDependencyIdentifier(char *analyzed_register, int position, Reorder_Buffe
 			// If the instruction already has its result, or if it does not write to the register, there is no need to analyze the dependency
 			if ( rb->line[i].instruction_state == WRITE_RESULT || rb->line[i].instruction_state == COMMITED || (dontDoWrite(instruction_operation) == 1)) 
 				continue;
-			
-			/* TODO - 	Se uma instrução depende de duas instruções, conforme exemplo:
-						SRA R2, R5, R6
-						SW R2, 0(R1)
-						ADD R2, R2, R3
-						SUB R1, R2, R3
-
-						Se SRA for executado, o SUB tem sua dependência retirada, e ele agora precisa depender de ADD, essa atualização da dependência
-						precisa acontecer a todo momento ao executar as instruções, ou então, buscar a dependência mais próxima acima no reorder buffer.
-			*/
 
 			/* RAW (Read After Write) dependency */
 			if ( strcmp(rb->line[i].instruction->splitted_instruction[1], analyzed_register) == 0 ) {
