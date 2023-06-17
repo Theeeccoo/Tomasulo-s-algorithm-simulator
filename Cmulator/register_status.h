@@ -77,5 +77,6 @@ extern void printRegisterStatus(Register_status* register_status);
 extern int findPosRegister(char* field, Register_status* register_status);
 extern int getReorderPosition(char* field, Register_status* register_status);
 extern int freeRegister(char * fieldRegister, Register_status* register_status);
-extern char* calculateResult(Instruction* instruction);
+extern char* registerNameOrPositionRB (Register_status* register_status, char* name_register, int position_instruction_rb);
+extern char* calculateResult(Instruction* instruction, Register_status* register_status);
 /**@}*/

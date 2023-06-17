@@ -361,7 +361,7 @@ void initializer(char* filename){
 					insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
 				}
 				// Get the result and write it to the reorder buffer
-				strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction) );
+				strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction, registerRename) );
 			}
 		}
 		if ( rb->line[i].instruction_state == EXECUTING ) {
@@ -372,7 +372,7 @@ void initializer(char* filename){
 				insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
 			}
 			// Get the result and write it to the reorder buffer
-			strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction) );
+			strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction, registerRename) );
 		}
 
 		// Forward of data, because the instruction was executed and its result can be used by the next instructions

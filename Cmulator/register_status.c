@@ -167,3 +167,120 @@ int freeRegister(char * fieldRegister, Register_status* register_status) {
 
 	return posRegisterStatus;
 }
+
+/**
+ * @brief 	Returns the position of the reorder buffer you wrote to the register or the 
+ * 			name of the register itself if there is no writing to it
+ *
+ * @param register_status 			Structure that stores the registers
+ * @param name_register				Name of registrar being analyzed
+ * @param position_instruction_rb	Position in the reorder buffer that the instruction 
+ * 									that will read from the register is
+ * 
+ * @details Returns the position of the reorder buffer you wrote to the register or the 
+ * 			name of the register itself if there is no writing to it
+ * 
+ * @return 	Returns the position of the reorder buffer you wrote to the register or the 
+ * 			name of the register itself if there is no writing to it
+ */
+char* registerNameOrPositionRB (Register_status* register_status, char* name_register, int position_instruction_rb) {
+	char* result = (char*) malloc( SIZE_STR * sizeof(char) );
+	int reorder_position_register = getReorderPosition(name_register, register_status);
+	char* position = (char*) malloc( 2 * sizeof(char) );
+	position[0] = '\0';
+
+	if (reorder_position_register != -1 && reorder_position_register != position_instruction_rb) {
+		strcpy(result, "#");
+		sprintf(position, "%d", reorder_position_register);
+		strcat(result, position);
+		strcat(result, "\0");
+
+	} else {
+		strcpy(result, name_register);
+	}
+
+	return result;
+}
+
+/**
+ * @brief Computes the result of the statement that is executed
+ *
+ * @param instruction Instruction that will have its result calculated
+ * 
+ * @details As your operation computes the result of the instruction
+ * 
+ * @return Returns the calculated result
+ */
+char* calculateResult(Instruction* instruction, Register_status* register_status) {
+	char* result = (char*) malloc( SIZE_STR * sizeof(char) );
+	strcpy(result, "");
+	
+	if(instruction->type == ADD) {
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[2], instruction->reorder_buffer_position));
+		if(strcmp(instruction->splitted_instruction[0], "ADD") == 0) {
+			strcat(result, " + ");
+		} else {
+			strcat(result, " - ");
+		}
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[3], instruction->reorder_buffer_position));
+
+	} else if(instruction->type == LOAD) {
+		if(strcmp(instruction->splitted_instruction[0], "LW") == 0) {
+			strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[1], instruction->reorder_buffer_position));
+			strcat(result, " = Mem[");
+			strcat(result, instruction->splitted_instruction[2]);
+			strcat(result, " + Regs[");
+			strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[3], instruction->reorder_buffer_position));
+			strcat(result, "]]");
+		} else {
+			strcat(result, "Mem[");
+			strcat(result, instruction->splitted_instruction[2]);
+			strcat(result, " + Regs[");
+			strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[3], instruction->reorder_buffer_position));
+			strcat(result, "]] = ");
+			strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[1], instruction->reorder_buffer_position));
+		}
+
+	} else if(instruction->type == MULT) {
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[2], instruction->reorder_buffer_position));
+		if(strcmp(instruction->splitted_instruction[0], "MUL") == 0) {
+			strcat(result, " * ");
+		} else if(strcmp(instruction->splitted_instruction[0], "DIV") == 0){
+			strcat(result, " / ");
+		} else {
+			strcat(result, " % ");
+		}
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[3], instruction->reorder_buffer_position));
+
+	} else if(instruction->type == BRANCH) {
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[1], instruction->reorder_buffer_position));
+		if(strcmp(instruction->splitted_instruction[0], "BEQ") == 0) {
+			strcat(result, " == ");
+		} else {
+			strcat(result, " != ");
+		}
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[2], instruction->reorder_buffer_position));
+
+	} else if(instruction->type == COMPARISON) {
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[2], instruction->reorder_buffer_position));
+		strcat(result, " < ");
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[3], instruction->reorder_buffer_position));
+
+	} else if(instruction->type == LOGICAL) {
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[2], instruction->reorder_buffer_position));
+		if(strcmp(instruction->splitted_instruction[0], "AND") == 0) {
+			strcat(result, " && ");
+		} else if(strcmp(instruction->splitted_instruction[0], "OR") == 0) {
+			strcat(result, " || ");
+		} else if(strcmp(instruction->splitted_instruction[0], "XOR") == 0) {
+			strcat(result, " ^ ");
+		} else if(strcmp(instruction->splitted_instruction[0], "SLL") == 0) {
+			strcat(result, " << ");
+		} else {
+			strcat(result, " >> ");
+		}
+		strcat(result, registerNameOrPositionRB(register_status, instruction->splitted_instruction[3], instruction->reorder_buffer_position));
+	}
+
+	return result;
+}

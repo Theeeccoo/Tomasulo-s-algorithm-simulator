@@ -3,23 +3,23 @@
 Entry	Busy	Instruction				State					Destination		Value
   0		Yes		SRA R2, R5, R6		ISSUE					    R2				NOT CALCULATED YET
   1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		LW R5, 0(R3)			ISSUE					    R5				NOT CALCULATED YET
+  3		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
 
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					Yes			SW			-					R1				0			-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			-					R3				0			-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
+Load2					Yes			LW			0				R3				-1		-1		 2			0 + Regs[R3]
+ADD1					Yes			ADD			-					R3				0			-1		 3			-
+ADD2					Yes			SUB			-					R3				3			-1		 4			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
+MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
+BRANCH				Yes			BEQ			-					-					4			3			 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			Yes			SRA			R5				R6				-1		-1		 0			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -50,23 +50,23 @@ ________________________________________________________________________________
 Entry	Busy	Instruction				State					Destination		Value
   0		Yes		SRA R2, R5, R6		EXECUTING			    R2				NOT CALCULATED YET
   1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		LW R5, 0(R3)			EXECUTING			    R5				NOT CALCULATED YET
+  3		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
 
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					Yes			SW			-					R1				0			-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			-					R3				0			-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
+Load2					Yes			LW			0				R3				-1		-1		 2			0 + Regs[R3]
+ADD1					Yes			ADD			-					R3				0			-1		 3			-
+ADD2					Yes			SUB			-					R3				3			-1		 4			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
+MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
+BRANCH				Yes			BEQ			-					-					4			3			 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			Yes			SRA			R5				R6				-1		-1		 0			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -97,10 +97,10 @@ ________________________________________________________________________________
 Entry	Busy	Instruction				State					Destination		Value
   0		Yes		SRA R2, R5, R6		WRITE_RESULT	    R2				R5 >> R6
   1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		LW R5, 0(R3)			WRITE_RESULT	    R5				R5 = Mem[0 + Regs[R3]]
+  3		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -108,12 +108,12 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
+ADD1					Yes			ADD			R2				R3				-1		-1		 3			-
+ADD2					Yes			SUB			-					R3				3			-1		 4			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
+MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
+BRANCH				Yes			BEQ			-					-					4			3			 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -123,8 +123,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			0				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
+Reorder#:		-1			-1			0				-1			-1			2				-1			-1			
+Busy:				No			No			Yes			No			No			Yes			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -144,10 +144,10 @@ ________________________________________________________________________________
 Entry	Busy	Instruction				State					Destination		Value
   0		No		SRA R2, R5, R6		COMMITED			    R2				R5 >> R6
   1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		LW R5, 0(R3)			WRITE_RESULT	    R5				R5 = Mem[0 + Regs[R3]]
+  3		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -155,12 +155,12 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
+ADD1					Yes			ADD			R2				R3				-1		-1		 3			-
+ADD2					Yes			SUB			-					R3				3			-1		 4			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
+MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
+BRANCH				Yes			BEQ			-					-					4			3			 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -170,8 +170,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			0				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
+Reorder#:		-1			-1			0				-1			-1			2				-1			-1			
+Busy:				No			No			Yes			No			No			Yes			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -190,11 +190,11 @@ ________________________________________________________________________________
 
 Entry	Busy	Instruction				State					Destination		Value
   1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		LW R5, 0(R3)			WRITE_RESULT	    R5				R5 = Mem[0 + Regs[R3]]
+  3		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -202,12 +202,12 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					Yes			SUB			-					R3				2			-1		 0			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
+ADD1					Yes			ADD			R2				R3				-1		-1		 3			-
+ADD2					Yes			SUB			-					R3				3			-1		 4			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					Yes			MUL			-					R3				3			-1		 0			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
+BRANCH				Yes			BEQ			-					-					4			3			 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -217,8 +217,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
+Reorder#:		-1			-1			-1			-1			-1			2				-1			-1			
+Busy:				No			No			No			No			No			Yes			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -237,11 +237,11 @@ ________________________________________________________________________________
 
 Entry	Busy	Instruction				State					Destination		Value
   1		Yes		SW R2, 0(R1)			EXECUTING			    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		EXECUTING			    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		LW R5, 0(R3)			WRITE_RESULT	    R5				R5 = Mem[0 + Regs[R3]]
+  3		Yes		ADD R2, R2, R3		EXECUTING			    R2				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -249,12 +249,12 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					Yes			SUB			-					R3				2			-1		 0			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
+ADD1					Yes			ADD			R2				R3				-1		-1		 3			-
+ADD2					Yes			SUB			-					R3				3			-1		 4			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					Yes			MUL			-					R3				3			-1		 0			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
+BRANCH				Yes			BEQ			-					-					4			3			 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -264,8 +264,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
+Reorder#:		-1			-1			-1			-1			-1			2				-1			-1			
+Busy:				No			No			No			No			No			Yes			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -284,11 +284,11 @@ ________________________________________________________________________________
 
 Entry	Busy	Instruction				State					Destination		Value
   1		Yes		SW R2, 0(R1)			WRITE_RESULT	    R2				Mem[0 + Regs[R1]] = R2
-  2		Yes		ADD R2, R2, R3		WRITE_RESULT	    R2				R2 + R3
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		LW R5, 0(R3)			WRITE_RESULT	    R5				R5 = Mem[0 + Regs[R3]]
+  3		Yes		ADD R2, R2, R3		WRITE_RESULT	    R2				R2 + R3
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -297,11 +297,11 @@ Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
 ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
+ADD2					Yes			SUB			R2				R3				-1		-1		 4			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					Yes			MUL			R2				R3				-1		-1		 0			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
+BRANCH				Yes			BEQ			-					R2				4			-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -311,8 +311,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			2				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
+Reorder#:		-1			-1			3				-1			-1			2				-1			-1			
+Busy:				No			No			Yes			No			No			Yes			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -331,11 +331,11 @@ ________________________________________________________________________________
 
 Entry	Busy	Instruction				State					Destination		Value
   1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		No		LW R5, 0(R3)			COMMITED			    R5				R5 = Mem[0 + Regs[R3]]
+  3		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -344,11 +344,11 @@ Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
 ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
+ADD2					Yes			SUB			R2				R3				-1		-1		 4			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					Yes			MUL			R2				R3				-1		-1		 0			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
+BRANCH				Yes			BEQ			-					R2				4			-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -358,8 +358,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			2				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
+Reorder#:		-1			-1			3				-1			-1			2				-1			-1			
+Busy:				No			No			Yes			No			No			Yes			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -377,12 +377,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  1		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -390,12 +390,12 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
+ADD1					Yes			SUB			R2				R3				-1		-1		 1			-
+ADD2					Yes			SUB			R2				R3				-1		-1		 4			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					Yes			MUL			R2				R3				-1		-1		 0			-
+MULT2					Yes			MUL			R2				R3				-1		-1		 3			-
+BRANCH				Yes			BEQ			-					R2				4			-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -405,8 +405,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			2				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -424,12 +424,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		Yes		SUB R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  4		Yes		SUB R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  1		Yes		SUB R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -437,12 +437,12 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
+ADD1					Yes			SUB			R2				R3				-1		-1		 1			-
+ADD2					Yes			SUB			R2				R3				-1		-1		 4			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					Yes			MUL			R2				R3				-1		-1		 0			-
+MULT2					Yes			MUL			R2				R3				-1		-1		 3			-
+BRANCH				Yes			BEQ			-					R2				4			-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -452,8 +452,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			2				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -471,12 +471,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
+  4		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  1		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
 
 
 														Reservation Station
@@ -489,947 +489,7 @@ ADD2					No			-				-					-					-1		-1		 -1			-
 ADD3					No			-				-					-					-1		-1		 -1			-
 MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			0				2				-1			-1			-1			-1			-1			
-Busy:				No			Yes			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			0				2				-1			-1			-1			-1			-1			
-Busy:				No			Yes			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			0				2				-1			-1			-1			-1			-1			
-Busy:				No			Yes			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-  4		Yes		BEQ R1, R2, R4		EXECUTING			    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			0				2				-1			-1			-1			-1			-1			
-Busy:				No			Yes			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-  4		Yes		BEQ R1, R2, R4		WRITE_RESULT	    R1				R1 == R2
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				No			-				-					-					-1		-1		 -1			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			0				2				-1			-1			-1			-1			-1			
-Busy:				No			Yes			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-  4		No		BEQ R1, R2, R4		COMMITED			    R1				R1 == R2
-  5		No		MUL R1, R2, R3		COMMITED			    R1				R2 * R3
-  0		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				No			-				-					-					-1		-1		 -1			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			0				2				-1			-1			-1			-1			-1			
-Busy:				No			Yes			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  0		Yes		SRA R2, R5, R6		ISSUE					    R2				NOT CALCULATED YET
-  1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					Yes			SW			-					R1				0			-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			-					R3				0			-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			SRA			R5				R6				-1		-1		 0			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  0		Yes		SRA R2, R5, R6		EXECUTING			    R2				NOT CALCULATED YET
-  1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					Yes			SW			-					R1				0			-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			-					R3				0			-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			SRA			R5				R6				-1		-1		 0			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  0		Yes		SRA R2, R5, R6		WRITE_RESULT	    R2				R5 >> R6
-  1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			0				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  0		No		SRA R2, R5, R6		COMMITED			    R2				R5 >> R6
-  1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			0				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		Yes		SW R2, 0(R1)			ISSUE					    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					Yes			SUB			-					R3				2			-1		 0			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		Yes		SW R2, 0(R1)			EXECUTING			    R2				NOT CALCULATED YET
-  2		Yes		ADD R2, R2, R3		EXECUTING			    R2				NOT CALCULATED YET
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					Yes			SW			R2				R1				-1		-1		 1			0 + Regs[R1]
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 2			-
-ADD2					Yes			SUB			-					R3				2			-1		 3			-
-ADD3					Yes			SUB			-					R3				2			-1		 0			-
-MULT1					Yes			MUL			-					R3				2			-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					-					3			2			 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		Yes		SW R2, 0(R1)			WRITE_RESULT	    R2				Mem[0 + Regs[R1]] = R2
-  2		Yes		ADD R2, R2, R3		WRITE_RESULT	    R2				R2 + R3
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			2				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  1		No		SW R2, 0(R1)			COMMITED			    R2				Mem[0 + Regs[R1]] = R2
-  2		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			2				-1			-1			-1			-1			-1			
-Busy:				No			No			Yes			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  3		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
-MULT2					Yes			MUL			R2				R3				-1		-1		 2			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  3		Yes		SUB R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  0		Yes		SUB R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					Yes			SUB			R2				R3				-1		-1		 3			-
-ADD3					Yes			SUB			R2				R3				-1		-1		 0			-
-MULT1					Yes			MUL			R2				R3				-1		-1		 5			-
-MULT2					Yes			MUL			R2				R3				-1		-1		 2			-
-BRANCH				Yes			BEQ			-					R2				3			-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  3		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			2				-1			-1			-1			-1			-1			-1			
-Busy:				No			Yes			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  3		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			2				-1			-1			-1			-1			-1			-1			
-Busy:				No			Yes			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  4		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  3		Yes		SLL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			SLL			R2				R3				-1		-1		 3			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  4		Yes		BEQ R1, R2, R4		EXECUTING			    R1				NOT CALCULATED YET
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  3		Yes		SLL R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R1				R2				-1		-1		 4			-
-COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			SLL			R2				R3				-1		-1		 3			-
-LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			No			-				-					-					-1		-1		 -1			-
-
-
-														Register Status
-
-Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R8			R9			R10			R11			R12			R13			R14			R15			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R16			R17			R18			R19			R20			R21			R22			R23			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-
-Field:			R24			R25			R26			R27			R28			R29			R30			R31			
-Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
-Busy:				No			No			No			No			No			No			No			No			
-_____________________________________________________________________________________________________________
-
-														Reorder Buffer
-
-Entry	Busy	Instruction				State					Destination		Value
-  4		Yes		BEQ R1, R2, R4		WRITE_RESULT	    R1				R1 == R2
-  5		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  0		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  3		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
-
-
-														Reservation Station
-
-Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
-Load1					No			-				-					-					-1		-1		 -1			-
-Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					No			-				-					-					-1		-1		 -1			-
-ADD2					No			-				-					-					-1		-1		 -1			-
-ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					No			-				-					-					-1		-1		 -1			-
-MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				No			-				-					-					-1		-1		 -1			-
+BRANCH				Yes			BEQ			R1				R2				-1		-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -1458,12 +518,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  4		No		BEQ R1, R2, R4		COMMITED			    R1				R1 == R2
-  5		No		MUL R1, R2, R3		COMMITED			    R1				R2 * R3
-  0		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
-  1		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  3		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
+  4		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  1		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
 
 
 														Reservation Station
@@ -1476,7 +536,7 @@ ADD2					No			-				-					-					-1		-1		 -1			-
 ADD3					No			-				-					-					-1		-1		 -1			-
 MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				No			-				-					-					-1		-1		 -1			-
+BRANCH				Yes			BEQ			R1				R2				-1		-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
@@ -1505,12 +565,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  1		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  3		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
-  4		Yes		ADD R7, R8, R9		ISSUE					    R7				NOT CALCULATED YET
-  5		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
-  0		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  1		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  4		Yes		SLL R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -1518,14 +578,14 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R8				R9				-1		-1		 4			-
-ADD2					Yes			ADD			R2				R3				-1		-1		 5			-
+ADD1					No			-				-					-					-1		-1		 -1			-
+ADD2					No			-				-					-					-1		-1		 -1			-
 ADD3					No			-				-					-					-1		-1		 -1			-
 MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R2				R4				-1		-1		 1			-
+BRANCH				Yes			BEQ			R1				R2				-1		-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
+LOGICAL1			Yes			SLL			R2				R3				-1		-1		 4			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
 LOGICAL3			No			-				-					-					-1		-1		 -1			-
 
@@ -1552,12 +612,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  1		Yes		BEQ R1, R2, R4		EXECUTING			    R1				NOT CALCULATED YET
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  3		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
-  4		Yes		ADD R7, R8, R9		EXECUTING			    R7				NOT CALCULATED YET
-  5		Yes		ADD R2, R2, R3		EXECUTING			    R2				NOT CALCULATED YET
-  0		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		EXECUTING			    R1				NOT CALCULATED YET
+  0		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  1		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  4		Yes		SLL R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -1565,14 +625,14 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R8				R9				-1		-1		 4			-
-ADD2					Yes			ADD			R2				R3				-1		-1		 5			-
+ADD1					No			-				-					-					-1		-1		 -1			-
+ADD2					No			-				-					-					-1		-1		 -1			-
 ADD3					No			-				-					-					-1		-1		 -1			-
 MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BEQ			R2				R4				-1		-1		 1			-
+BRANCH				Yes			BEQ			R1				R2				-1		-1		 5			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			No			-				-					-					-1		-1		 -1			-
+LOGICAL1			Yes			SLL			R2				R3				-1		-1		 4			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
 LOGICAL3			No			-				-					-					-1		-1		 -1			-
 
@@ -1599,12 +659,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  1		Yes		BEQ R1, R2, R4		WRITE_RESULT	    R1				R1 == R2
-  2		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
-  3		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
-  4		Yes		ADD R7, R8, R9		WRITE_RESULT	    R7				R8 + R9
-  5		Yes		ADD R2, R2, R3		WRITE_RESULT	    R2				R2 + R3
-  0		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+  5		Yes		BEQ R1, R2, R4		WRITE_RESULT	    R1				R1 == R2
+  0		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  1		Yes		SUB R1, R2, R3		WRITE_RESULT	    R1				R2 - R3
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  4		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
 
 
 														Reservation Station
@@ -1627,8 +687,8 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			5				-1			-1			-1			-1			4				
-Busy:				No			No			Yes			No			No			No			No			Yes			
+Reorder#:		-1			4				-1			-1			-1			-1			-1			-1			
+Busy:				No			Yes			No			No			No			No			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
 Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
@@ -1646,12 +706,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  1		No		BEQ R1, R2, R4		COMMITED			    R1				R1 == R2
-  2		No		MUL R1, R2, R3		COMMITED			    R1				R2 * R3
-  3		No		SLL R1, R2, R3		COMMITED			    R1				R2 << R3
-  4		No		ADD R7, R8, R9		COMMITED			    R7				R8 + R9
-  5		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
-  0		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+  5		No		BEQ R1, R2, R4		COMMITED			    R1				R1 == R2
+  0		No		MUL R1, R2, R3		COMMITED			    R1				R2 * R3
+  1		No		SUB R1, R2, R3		COMMITED			    R1				R2 - R3
+  2		Yes		BEQ R1, R2, R4		WAITING				    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  4		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
 
 
 														Reservation Station
@@ -1674,7 +734,148 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			5				-1			-1			-1			-1			4				
+Reorder#:		-1			4				-1			-1			-1			-1			-1			-1			
+Busy:				No			Yes			No			No			No			No			No			No			
+
+Field:			R8			R9			R10			R11			R12			R13			R14			R15			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R16			R17			R18			R19			R20			R21			R22			R23			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R24			R25			R26			R27			R28			R29			R30			R31			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+_____________________________________________________________________________________________________________
+
+														Reorder Buffer
+
+Entry	Busy	Instruction				State					Destination		Value
+  2		Yes		BEQ R1, R2, R4		ISSUE					    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  4		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
+  5		Yes		ADD R7, R8, R9		ISSUE					    R7				NOT CALCULATED YET
+  0		Yes		ADD R2, R2, R3		ISSUE					    R2				NOT CALCULATED YET
+  1		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+
+
+														Reservation Station
+
+Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
+Load1					No			-				-					-					-1		-1		 -1			-
+Load2					No			-				-					-					-1		-1		 -1			-
+ADD1					Yes			ADD			R8				R9				-1		-1		 5			-
+ADD2					Yes			ADD			R2				R3				-1		-1		 0			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					No			-				-					-					-1		-1		 -1			-
+MULT2					No			-				-					-					-1		-1		 -1			-
+BRANCH				Yes			BEQ			R2				R4				-1		-1		 2			-
+COMPARISON		No			-				-					-					-1		-1		 -1			-
+LOGICAL1			No			-				-					-					-1		-1		 -1			-
+LOGICAL2			No			-				-					-					-1		-1		 -1			-
+LOGICAL3			No			-				-					-					-1		-1		 -1			-
+
+
+														Register Status
+
+Field:			R0			R1			R2			R3			R4			R5			R6			R7			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R8			R9			R10			R11			R12			R13			R14			R15			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R16			R17			R18			R19			R20			R21			R22			R23			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R24			R25			R26			R27			R28			R29			R30			R31			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+_____________________________________________________________________________________________________________
+
+														Reorder Buffer
+
+Entry	Busy	Instruction				State					Destination		Value
+  2		Yes		BEQ R1, R2, R4		EXECUTING			    R1				NOT CALCULATED YET
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  4		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
+  5		Yes		ADD R7, R8, R9		EXECUTING			    R7				NOT CALCULATED YET
+  0		Yes		ADD R2, R2, R3		EXECUTING			    R2				NOT CALCULATED YET
+  1		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+
+
+														Reservation Station
+
+Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
+Load1					No			-				-					-					-1		-1		 -1			-
+Load2					No			-				-					-					-1		-1		 -1			-
+ADD1					Yes			ADD			R8				R9				-1		-1		 5			-
+ADD2					Yes			ADD			R2				R3				-1		-1		 0			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					No			-				-					-					-1		-1		 -1			-
+MULT2					No			-				-					-					-1		-1		 -1			-
+BRANCH				Yes			BEQ			R2				R4				-1		-1		 2			-
+COMPARISON		No			-				-					-					-1		-1		 -1			-
+LOGICAL1			No			-				-					-					-1		-1		 -1			-
+LOGICAL2			No			-				-					-					-1		-1		 -1			-
+LOGICAL3			No			-				-					-					-1		-1		 -1			-
+
+
+														Register Status
+
+Field:			R0			R1			R2			R3			R4			R5			R6			R7			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R8			R9			R10			R11			R12			R13			R14			R15			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R16			R17			R18			R19			R20			R21			R22			R23			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R24			R25			R26			R27			R28			R29			R30			R31			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+_____________________________________________________________________________________________________________
+
+														Reorder Buffer
+
+Entry	Busy	Instruction				State					Destination		Value
+  2		Yes		BEQ R1, R2, R4		WRITE_RESULT	    R1				R1 == R2
+  3		Yes		MUL R1, R2, R3		WRITE_RESULT	    R1				R2 * R3
+  4		Yes		SLL R1, R2, R3		WRITE_RESULT	    R1				R2 << R3
+  5		Yes		ADD R7, R8, R9		WRITE_RESULT	    R7				R8 + R9
+  0		Yes		ADD R2, R2, R3		WRITE_RESULT	    R2				R2 + R3
+  1		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+
+
+														Reservation Station
+
+Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
+Load1					No			-				-					-					-1		-1		 -1			-
+Load2					No			-				-					-					-1		-1		 -1			-
+ADD1					No			-				-					-					-1		-1		 -1			-
+ADD2					No			-				-					-					-1		-1		 -1			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					No			-				-					-					-1		-1		 -1			-
+MULT2					No			-				-					-					-1		-1		 -1			-
+BRANCH				No			-				-					-					-1		-1		 -1			-
+COMPARISON		No			-				-					-					-1		-1		 -1			-
+LOGICAL1			No			-				-					-					-1		-1		 -1			-
+LOGICAL2			No			-				-					-					-1		-1		 -1			-
+LOGICAL3			No			-				-					-					-1		-1		 -1			-
+
+
+														Register Status
+
+Field:			R0			R1			R2			R3			R4			R5			R6			R7			
+Reorder#:		-1			-1			0				-1			-1			-1			-1			5				
 Busy:				No			No			Yes			No			No			No			No			Yes			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -1693,12 +894,59 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		Yes		BNE R1, R5, R6		ISSUE					    R1				NOT CALCULATED YET
-  1		Yes		XOR R6, R8, R9		ISSUE					    R6				NOT CALCULATED YET
-  2		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
-  3		Yes		ADD R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		No		BEQ R1, R2, R4		COMMITED			    R1				R1 == R2
+  3		No		MUL R1, R2, R3		COMMITED			    R1				R2 * R3
+  4		No		SLL R1, R2, R3		COMMITED			    R1				R2 << R3
+  5		No		ADD R7, R8, R9		COMMITED			    R7				R8 + R9
+  0		No		ADD R2, R2, R3		COMMITED			    R2				R2 + R3
+  1		Yes		BNE R1, R5, R6		WAITING				    R1				NOT CALCULATED YET
+
+
+														Reservation Station
+
+Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
+Load1					No			-				-					-					-1		-1		 -1			-
+Load2					No			-				-					-					-1		-1		 -1			-
+ADD1					No			-				-					-					-1		-1		 -1			-
+ADD2					No			-				-					-					-1		-1		 -1			-
+ADD3					No			-				-					-					-1		-1		 -1			-
+MULT1					No			-				-					-					-1		-1		 -1			-
+MULT2					No			-				-					-					-1		-1		 -1			-
+BRANCH				No			-				-					-					-1		-1		 -1			-
+COMPARISON		No			-				-					-					-1		-1		 -1			-
+LOGICAL1			No			-				-					-					-1		-1		 -1			-
+LOGICAL2			No			-				-					-					-1		-1		 -1			-
+LOGICAL3			No			-				-					-					-1		-1		 -1			-
+
+
+														Register Status
+
+Field:			R0			R1			R2			R3			R4			R5			R6			R7			
+Reorder#:		-1			-1			0				-1			-1			-1			-1			5				
+Busy:				No			No			Yes			No			No			No			No			Yes			
+
+Field:			R8			R9			R10			R11			R12			R13			R14			R15			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R16			R17			R18			R19			R20			R21			R22			R23			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+
+Field:			R24			R25			R26			R27			R28			R29			R30			R31			
+Reorder#:		-1			-1			-1			-1			-1			-1			-1			-1			
+Busy:				No			No			No			No			No			No			No			No			
+_____________________________________________________________________________________________________________
+
+														Reorder Buffer
+
+Entry	Busy	Instruction				State					Destination		Value
+  1		Yes		BNE R1, R5, R6		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		XOR R6, R8, R9		ISSUE					    R6				NOT CALCULATED YET
+  3		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
   4		Yes		ADD R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  5		Yes		DIV R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		ADD R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  0		Yes		DIV R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -1706,14 +954,14 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 3			-
-ADD2					Yes			ADD			R2				R3				-1		-1		 4			-
+ADD1					Yes			ADD			R2				R3				-1		-1		 4			-
+ADD2					Yes			ADD			R2				R3				-1		-1		 5			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			DIV			R2				R3				-1		-1		 5			-
+MULT1					Yes			DIV			R2				R3				-1		-1		 0			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BNE			R5				R6				-1		-1		 0			-
+BRANCH				Yes			BNE			R5				R6				-1		-1		 1			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			XOR			R8				R9				-1		-1		 1			-
+LOGICAL1			Yes			XOR			R8				R9				-1		-1		 2			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
 LOGICAL3			No			-				-					-					-1		-1		 -1			-
 
@@ -1740,12 +988,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		Yes		BNE R1, R5, R6		EXECUTING			    R1				NOT CALCULATED YET
-  1		Yes		XOR R6, R8, R9		EXECUTING			    R6				NOT CALCULATED YET
-  2		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
-  3		Yes		ADD R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  1		Yes		BNE R1, R5, R6		EXECUTING			    R1				NOT CALCULATED YET
+  2		Yes		XOR R6, R8, R9		EXECUTING			    R6				NOT CALCULATED YET
+  3		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
   4		Yes		ADD R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  5		Yes		DIV R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  5		Yes		ADD R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  0		Yes		DIV R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -1753,14 +1001,14 @@ Entry	Busy	Instruction				State					Destination		Value
 Name					Busy		Op			Vj				Vk				Qj		Qk		Dest		Address
 Load1					No			-				-					-					-1		-1		 -1			-
 Load2					No			-				-					-					-1		-1		 -1			-
-ADD1					Yes			ADD			R2				R3				-1		-1		 3			-
-ADD2					Yes			ADD			R2				R3				-1		-1		 4			-
+ADD1					Yes			ADD			R2				R3				-1		-1		 4			-
+ADD2					Yes			ADD			R2				R3				-1		-1		 5			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			DIV			R2				R3				-1		-1		 5			-
+MULT1					Yes			DIV			R2				R3				-1		-1		 0			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BNE			R5				R6				-1		-1		 0			-
+BRANCH				Yes			BNE			R5				R6				-1		-1		 1			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			XOR			R8				R9				-1		-1		 1			-
+LOGICAL1			Yes			XOR			R8				R9				-1		-1		 2			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
 LOGICAL3			No			-				-					-					-1		-1		 -1			-
 
@@ -1787,12 +1035,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		Yes		BNE R1, R5, R6		WRITE_RESULT	    R1				R1 != R5
-  1		Yes		XOR R6, R8, R9		WRITE_RESULT	    R6				R8 ^ R9
-  2		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
-  3		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  1		Yes		BNE R1, R5, R6		WRITE_RESULT	    R1				R1 != R5
+  2		Yes		XOR R6, R8, R9		WRITE_RESULT	    R6				R8 ^ R9
+  3		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
   4		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
-  5		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
+  5		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  0		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
 
 
 														Reservation Station
@@ -1815,7 +1063,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			5				-1			-1			-1			-1			1				-1			
+Reorder#:		-1			0				-1			-1			-1			-1			2				-1			
 Busy:				No			Yes			No			No			No			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -1834,12 +1082,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		BNE R1, R5, R6		COMMITED			    R1				R1 != R5
-  1		No		XOR R6, R8, R9		COMMITED			    R6				R8 ^ R9
-  2		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
-  3		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  1		No		BNE R1, R5, R6		COMMITED			    R1				R1 != R5
+  2		No		XOR R6, R8, R9		COMMITED			    R6				R8 ^ R9
+  3		Yes		BNE R1, R2, R3		WAITING				    R1				NOT CALCULATED YET
   4		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
-  5		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
+  5		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  0		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
 
 
 														Reservation Station
@@ -1862,7 +1110,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			5				-1			-1			-1			-1			1				-1			
+Reorder#:		-1			0				-1			-1			-1			-1			2				-1			
 Busy:				No			Yes			No			No			No			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -1881,12 +1129,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  2		Yes		BNE R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  3		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  3		Yes		BNE R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
   4		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
-  5		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
-  0		Yes		REM R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
-  1		Yes		SLT R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  0		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
+  1		Yes		REM R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
+  2		Yes		SLT R1, R2, R3		ISSUE					    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -1897,10 +1145,10 @@ Load2					No			-				-					-					-1		-1		 -1			-
 ADD1					No			-				-					-					-1		-1		 -1			-
 ADD2					No			-				-					-					-1		-1		 -1			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			REM			R2				R3				-1		-1		 0			-
+MULT1					Yes			REM			R2				R3				-1		-1		 1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BNE			R2				R3				-1		-1		 2			-
-COMPARISON		Yes			SLT			R2				R3				-1		-1		 1			-
+BRANCH				Yes			BNE			R2				R3				-1		-1		 3			-
+COMPARISON		Yes			SLT			R2				R3				-1		-1		 2			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
 LOGICAL3			No			-				-					-					-1		-1		 -1			-
@@ -1909,7 +1157,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			5				-1			-1			-1			-1			-1			-1			
+Reorder#:		-1			0				-1			-1			-1			-1			-1			-1			
 Busy:				No			Yes			No			No			No			No			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -1928,12 +1176,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  2		Yes		BNE R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  3		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  3		Yes		BNE R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
   4		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
-  5		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
-  0		Yes		REM R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
-  1		Yes		SLT R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  5		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  0		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
+  1		Yes		REM R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
+  2		Yes		SLT R1, R2, R3		EXECUTING			    R1				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -1944,10 +1192,10 @@ Load2					No			-				-					-					-1		-1		 -1			-
 ADD1					No			-				-					-					-1		-1		 -1			-
 ADD2					No			-				-					-					-1		-1		 -1			-
 ADD3					No			-				-					-					-1		-1		 -1			-
-MULT1					Yes			REM			R2				R3				-1		-1		 0			-
+MULT1					Yes			REM			R2				R3				-1		-1		 1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
-BRANCH				Yes			BNE			R2				R3				-1		-1		 2			-
-COMPARISON		Yes			SLT			R2				R3				-1		-1		 1			-
+BRANCH				Yes			BNE			R2				R3				-1		-1		 3			-
+COMPARISON		Yes			SLT			R2				R3				-1		-1		 2			-
 LOGICAL1			No			-				-					-					-1		-1		 -1			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
 LOGICAL3			No			-				-					-					-1		-1		 -1			-
@@ -1956,7 +1204,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			5				-1			-1			-1			-1			-1			-1			
+Reorder#:		-1			0				-1			-1			-1			-1			-1			-1			
 Busy:				No			Yes			No			No			No			No			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -1975,12 +1223,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  2		Yes		BNE R1, R2, R3		WRITE_RESULT	    R1				R1 != R2
-  3		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  3		Yes		BNE R1, R2, R3		WRITE_RESULT	    R1				#0 != R2
   4		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
-  5		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
-  0		Yes		REM R1, R2, R3		WRITE_RESULT	    R1				R2 % R3
-  1		Yes		SLT R1, R2, R3		WRITE_RESULT	    R1				R2 < R3
+  5		Yes		ADD R1, R2, R3		WRITE_RESULT	    R1				R2 + R3
+  0		Yes		DIV R1, R2, R3		WRITE_RESULT	    R1				R2 / R3
+  1		Yes		REM R1, R2, R3		WRITE_RESULT	    R1				R2 % R3
+  2		Yes		SLT R1, R2, R3		WRITE_RESULT	    R1				R2 < R3
 
 
 														Reservation Station
@@ -2003,7 +1251,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			1				-1			-1			-1			-1			-1			-1			
+Reorder#:		-1			2				-1			-1			-1			-1			-1			-1			
 Busy:				No			Yes			No			No			No			No			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -2022,12 +1270,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  2		No		BNE R1, R2, R3		COMMITED			    R1				R1 != R2
-  3		No		ADD R1, R2, R3		COMMITED			    R1				R2 + R3
+  3		No		BNE R1, R2, R3		COMMITED			    R1				#0 != R2
   4		No		ADD R1, R2, R3		COMMITED			    R1				R2 + R3
-  5		No		DIV R1, R2, R3		COMMITED			    R1				R2 / R3
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  5		No		ADD R1, R2, R3		COMMITED			    R1				R2 + R3
+  0		No		DIV R1, R2, R3		COMMITED			    R1				R2 / R3
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
 
 
 														Reservation Station
@@ -2050,7 +1298,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			1				-1			-1			-1			-1			-1			-1			
+Reorder#:		-1			2				-1			-1			-1			-1			-1			-1			
 Busy:				No			Yes			No			No			No			No			No			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -2069,12 +1317,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		Yes		SLTI R4, R2, R3		ISSUE					    R4				NOT CALCULATED YET
-  3		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		OR R6, R7, R7			ISSUE					    R6				NOT CALCULATED YET
-  5		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		Yes		SLTI R4, R2, R3		ISSUE					    R4				NOT CALCULATED YET
+  4		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		OR R6, R7, R7			ISSUE					    R6				NOT CALCULATED YET
+  0		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -2088,10 +1336,10 @@ ADD3					No			-				-					-					-1		-1		 -1			-
 MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
 BRANCH				No			-				-					-					-1		-1		 -1			-
-COMPARISON		Yes			SLTI		R2				R3				-1		-1		 2			-
-LOGICAL1			Yes			AND			-					R10				2			-1		 3			-
-LOGICAL2			Yes			OR			R7				R7				-1		-1		 4			-
-LOGICAL3			Yes			SRL			R5				-					-1		4			 5			-
+COMPARISON		Yes			SLTI		R2				R3				-1		-1		 3			-
+LOGICAL1			Yes			AND			-					R10				3			-1		 4			-
+LOGICAL2			Yes			OR			R7				R7				-1		-1		 5			-
+LOGICAL3			Yes			SRL			R5				-					-1		5			 0			-
 
 
 														Register Status
@@ -2116,12 +1364,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		Yes		SLTI R4, R2, R3		EXECUTING			    R4				NOT CALCULATED YET
-  3		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		OR R6, R7, R7			EXECUTING			    R6				NOT CALCULATED YET
-  5		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		Yes		SLTI R4, R2, R3		EXECUTING			    R4				NOT CALCULATED YET
+  4		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		OR R6, R7, R7			EXECUTING			    R6				NOT CALCULATED YET
+  0		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -2135,10 +1383,10 @@ ADD3					No			-				-					-					-1		-1		 -1			-
 MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
 BRANCH				No			-				-					-					-1		-1		 -1			-
-COMPARISON		Yes			SLTI		R2				R3				-1		-1		 2			-
-LOGICAL1			Yes			AND			-					R10				2			-1		 3			-
-LOGICAL2			Yes			OR			R7				R7				-1		-1		 4			-
-LOGICAL3			Yes			SRL			R5				-					-1		4			 5			-
+COMPARISON		Yes			SLTI		R2				R3				-1		-1		 3			-
+LOGICAL1			Yes			AND			-					R10				3			-1		 4			-
+LOGICAL2			Yes			OR			R7				R7				-1		-1		 5			-
+LOGICAL3			Yes			SRL			R5				-					-1		5			 0			-
 
 
 														Register Status
@@ -2163,12 +1411,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		Yes		SLTI R4, R2, R3		WRITE_RESULT	    R4				R2 < R3
-  3		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
-  5		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		Yes		SLTI R4, R2, R3		WRITE_RESULT	    R4				R2 < R3
+  4		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
+  0		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -2183,15 +1431,15 @@ MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
 BRANCH				No			-				-					-					-1		-1		 -1			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			AND			R4				R10				-1		-1		 3			-
+LOGICAL1			Yes			AND			R4				R10				-1		-1		 4			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			Yes			SRL			R5				R6				-1		-1		 5			-
+LOGICAL3			Yes			SRL			R5				R6				-1		-1		 0			-
 
 
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			2				-1			4				-1			
+Reorder#:		-1			-1			-1			-1			3				-1			5				-1			
 Busy:				No			No			No			No			Yes			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -2210,12 +1458,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
-  3		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
-  5		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
+  4		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
+  0		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -2230,15 +1478,15 @@ MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
 BRANCH				No			-				-					-					-1		-1		 -1			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			AND			R4				R10				-1		-1		 3			-
+LOGICAL1			Yes			AND			R4				R10				-1		-1		 4			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			Yes			SRL			R5				R6				-1		-1		 5			-
+LOGICAL3			Yes			SRL			R5				R6				-1		-1		 0			-
 
 
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			2				-1			4				-1			
+Reorder#:		-1			-1			-1			-1			3				-1			5				-1			
 Busy:				No			No			No			No			Yes			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -2257,12 +1505,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
-  3		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
-  4		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
-  5		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
+  4		Yes		AND R1, R4, R10		ISSUE					    R1				NOT CALCULATED YET
+  5		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
+  0		Yes		SRL R4, R5, R6		ISSUE					    R4				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -2277,15 +1525,15 @@ MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
 BRANCH				No			-				-					-					-1		-1		 -1			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			AND			R4				R10				-1		-1		 3			-
+LOGICAL1			Yes			AND			R4				R10				-1		-1		 4			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			Yes			SRL			R5				R6				-1		-1		 5			-
+LOGICAL3			Yes			SRL			R5				R6				-1		-1		 0			-
 
 
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			2				-1			4				-1			
+Reorder#:		-1			-1			-1			-1			3				-1			5				-1			
 Busy:				No			No			No			No			Yes			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -2304,12 +1552,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
-  3		Yes		AND R1, R4, R10		EXECUTING			    R1				NOT CALCULATED YET
-  4		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
-  5		Yes		SRL R4, R5, R6		EXECUTING			    R4				NOT CALCULATED YET
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
+  4		Yes		AND R1, R4, R10		EXECUTING			    R1				NOT CALCULATED YET
+  5		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
+  0		Yes		SRL R4, R5, R6		EXECUTING			    R4				NOT CALCULATED YET
 
 
 														Reservation Station
@@ -2324,15 +1572,15 @@ MULT1					No			-				-					-					-1		-1		 -1			-
 MULT2					No			-				-					-					-1		-1		 -1			-
 BRANCH				No			-				-					-					-1		-1		 -1			-
 COMPARISON		No			-				-					-					-1		-1		 -1			-
-LOGICAL1			Yes			AND			R4				R10				-1		-1		 3			-
+LOGICAL1			Yes			AND			R4				R10				-1		-1		 4			-
 LOGICAL2			No			-				-					-					-1		-1		 -1			-
-LOGICAL3			Yes			SRL			R5				R6				-1		-1		 5			-
+LOGICAL3			Yes			SRL			R5				R6				-1		-1		 0			-
 
 
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			-1			-1			-1			2				-1			4				-1			
+Reorder#:		-1			-1			-1			-1			3				-1			5				-1			
 Busy:				No			No			No			No			Yes			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -2351,12 +1599,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
-  3		Yes		AND R1, R4, R10		WRITE_RESULT	    R1				R4 && R10
-  4		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
-  5		Yes		SRL R4, R5, R6		WRITE_RESULT	    R4				R5 >> R6
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
+  4		Yes		AND R1, R4, R10		WRITE_RESULT	    R1				#3 && R10
+  5		Yes		OR R6, R7, R7			WRITE_RESULT	    R6				R7 || R7
+  0		Yes		SRL R4, R5, R6		WRITE_RESULT	    R4				R5 >> #5
 
 
 														Reservation Station
@@ -2379,7 +1627,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			3				-1			-1			5				-1			4				-1			
+Reorder#:		-1			4				-1			-1			0				-1			5				-1			
 Busy:				No			Yes			No			No			Yes			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			
@@ -2398,12 +1646,12 @@ ________________________________________________________________________________
 														Reorder Buffer
 
 Entry	Busy	Instruction				State					Destination		Value
-  0		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
-  1		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
-  2		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
-  3		No		AND R1, R4, R10		COMMITED			    R1				R4 && R10
-  4		No		OR R6, R7, R7			COMMITED			    R6				R7 || R7
-  5		No		SRL R4, R5, R6		COMMITED			    R4				R5 >> R6
+  1		No		REM R1, R2, R3		COMMITED			    R1				R2 % R3
+  2		No		SLT R1, R2, R3		COMMITED			    R1				R2 < R3
+  3		No		SLTI R4, R2, R3		COMMITED			    R4				R2 < R3
+  4		No		AND R1, R4, R10		COMMITED			    R1				#3 && R10
+  5		No		OR R6, R7, R7			COMMITED			    R6				R7 || R7
+  0		No		SRL R4, R5, R6		COMMITED			    R4				R5 >> #5
 
 
 														Reservation Station
@@ -2426,7 +1674,7 @@ LOGICAL3			No			-				-					-					-1		-1		 -1			-
 														Register Status
 
 Field:			R0			R1			R2			R3			R4			R5			R6			R7			
-Reorder#:		-1			3				-1			-1			5				-1			4				-1			
+Reorder#:		-1			4				-1			-1			0				-1			5				-1			
 Busy:				No			Yes			No			No			Yes			No			Yes			No			
 
 Field:			R8			R9			R10			R11			R12			R13			R14			R15			

@@ -52,7 +52,6 @@ extern char** readInstructions(char*, int);
 extern int numberOfLines(char*);
 extern char** splitInstruction(char*);
 extern void printInstructions(Instruction*, char*);
-extern char* calculateResult(Instruction* instruction);
 extern void insertTime (char* full_instruction, Instruction *instructions, int position, int amount_instructions, float seconds);
 extern void printTimeInstructions(Instruction *instructions, int amount_instructions);
 /**@}*/
