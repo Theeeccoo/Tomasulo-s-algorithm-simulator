@@ -7,6 +7,37 @@
 #define MAX_SIZE 20
 
 /**
+ * @brief Calculates the number of jumps that PC must do
+ *
+ * @param instructions Array of instructions to be iterated
+ * @param number_of_instructions Total number of instructions
+ * @param label_instruction Label of given instruction
+ * @param position Position of given instruction in Instructions Array
+ *
+ * @details Function that calculates the number of jumps that PC must do whenever a BRANCH instruction is read
+ * Iterates through instructions array until label of BRANCH instruction is found
+ * Then, we subtract this position (of given label in instructions array) to the position of the instruction
+ *
+ * @return IF label NOT FOUND, returns 0 (zero jumps) OTHERWISE, IF label FOUND, returns number of jumps if values are negative, it means that the label is before the branch instruction
+ *  
+ */
+int findNumberOfJumps( Instruction* instructions, int number_of_instructions, char* label_instruction, int position ) {
+	int	resp = 0,
+		i    = 0;
+
+	for ( ; i < number_of_instructions; i++ ){
+		if ( strstr( instructions[i].splitted_instruction[0], label_instruction ) != NULL ) {
+			// In practice, it shouldn't be allowded to have labels with the same name
+			// So, whenever we find one, we calculate the number of jumps and finish it
+			resp = i - position;
+			i = number_of_instructions;
+		}	
+	}
+	
+	return resp;
+}
+
+/**
  * @brief Splits a instruction into pieces containing operation and operators
  *
  * @param instruction to be splitted 
@@ -18,7 +49,7 @@ char** splitInstruction(char *instruction){
 	// Setting size the max size here as 4
 	// but later we need to check if there's any instruction that needs more space ADD R1, R2, R3
 	char	**splitted_string = (char**) malloc(( 5 * (sizeof(char*)) ));
-	char	*delimiter = " ,()";
+	char	*delimiter = " ,():";
 	char	*token;
 	int	aux = 0;
 

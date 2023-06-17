@@ -51,6 +51,7 @@ extern Instruction* instructionsInitializer(char*);
 extern char** readInstructions(char*, int);
 extern int numberOfLines(char*);
 extern char** splitInstruction(char*);
+extern int findNumberOfJumps( Instruction*, int, char*, int );
 extern void printInstructions(Instruction*, char*);
 extern void insertTime (char* full_instruction, Instruction *instructions, int position, int amount_instructions, float seconds);
 extern void printTimeInstructions(Instruction *instructions, int amount_instructions);
