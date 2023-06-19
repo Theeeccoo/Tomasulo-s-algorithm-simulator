@@ -39,11 +39,13 @@ int insertInstructionRB(Instruction *instruction, Reorder_Buffer *rb){
 
 	rb->line[position].instruction_execution = BUSY;
 	
-	rb->line[position].instruction = instruction;
+	rb->line[position].instruction = cloneInstruction(instruction);
 
 	rb->line[position].instruction_state = WAITING;
 
-	rb->line[position].instruction_result = (char*) malloc( SIZE_STR * sizeof(char) );
+	if (rb->line[position].instruction_result == NULL) {
+		rb->line[position].instruction_result = (char*) malloc( SIZE_STR * sizeof(char) );
+	}
 	strcpy(rb->line[position].instruction_result, "NOT CALCULATED YET\0");
 
 	rb->line[position].instruction->reorder_buffer_position = position;
@@ -70,28 +72,50 @@ void printReorderBuffer(Reorder_Buffer *rb){
 		init = rb->filled_lines % rb->max_lines_rb_allocated,
 		end = ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1));
 	printf("\n\n\t\t\t\t\tReorder Buffer\n\n");
-	printf("  Entry\t\tBusy\tInstruction\t\tState\t\tDestination\tValue\n");
+	printf("  Entry\t\tBusy\tInstruction\t\t\tState\t\tDestination\tValue\n");
 	for( i = init; i != end; i = ((i + 1) % rb->max_lines_rb_allocated) ) {
 		printf("    %d\t\t", i);
 		printf("%s\t", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
-		printf("%s\t\t", rb->line[i].instruction->full_instruction);
-		printf("%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
-		if (rb->line[i].instruction_state < 2) {
+		printf("%s\t\t", (rb->line[i].instruction->full_instruction == NULL ? "-" : (strcmp(rb->line[i].instruction->full_instruction, "") == 0 ? "-" : rb->line[i].instruction->full_instruction)));
+		if ( rb->line[i].instruction->type != BRANCH ) {
 			printf("\t");
 		}
-		printf("    %s\t\t", rb->line[i].instruction->splitted_instruction[1]);
-		printf("%s\n", rb->line[i].instruction_result);
+		printf("%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
+		if ( rb->line[i].instruction_state < 2 ) {
+			printf("\t");
+		}
+		printf("    %s\t\t", (rb->line[i].instruction->splitted_instruction[1] == NULL ? "-" : (strcmp(rb->line[i].instruction->splitted_instruction[1], "") == 0 ? "-" : rb->line[i].instruction->splitted_instruction[1])));
+		printf("%s\n", (rb->line[i].instruction_result == NULL ? "-" : (strcmp(rb->line[i].instruction_result, "") == 0 ? "-" : rb->line[i].instruction_result)));
 	}
 	// Print the last position alone
 	printf("    %d\t\t", end);
 	printf("%s\t", ( rb->line[end].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
-	printf("%s\t\t", rb->line[end].instruction->full_instruction);
+	printf("%s\t\t", (rb->line[end].instruction->full_instruction == NULL ? "-" : (strcmp(rb->line[end].instruction->full_instruction, "") == 0 ? "-" : rb->line[end].instruction->full_instruction)));
+	if ( rb->line[i].instruction->type != BRANCH ) {
+			printf("\t");
+	}
 	printf("%s\t", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
-	if (rb->line[end].instruction_state < 2) {
+	if ( rb->line[end].instruction_state < 2 ) {
 		printf("\t");
 	}
-	printf("    %s\t\t", rb->line[end].instruction->splitted_instruction[1]);
-	printf("%s\n", rb->line[end].instruction_result);
+	printf("    %s\t\t", (rb->line[end].instruction->splitted_instruction[1] == NULL ? "-" : (strcmp(rb->line[end].instruction->splitted_instruction[1], "") == 0 ? "-" : rb->line[end].instruction->splitted_instruction[1])));
+	printf("%s\n", (rb->line[end].instruction_result == NULL ? "-" : (strcmp(rb->line[end].instruction_result, "") == 0 ? "-" : rb->line[end].instruction_result)));
+}
+
+/**
+ * @brief Clear data from a reorder buffer line
+ * 
+ * @param rb 				Structure that contains the reorder buffer
+ * @param positionToFree	Position of the reorder buffer line that will be cleared
+ * 
+ * @details Clear data from a reorder buffer line
+ */
+void freeLineReorderBuffer(Reorder_Buffer *rb, int positionToFree) {
+	rb->line[positionToFree].instruction_state = WAITING;
+	strcpy(rb->line[positionToFree].instruction->full_instruction, ""); 
+	strcpy(rb->line[positionToFree].instruction->splitted_instruction[1], "");
+	strcpy(rb->line[positionToFree].instruction_result, "");
+	rb->line[positionToFree].instruction_execution = NOT_BUSY;
 }
 
 /**
@@ -100,7 +124,6 @@ void printReorderBuffer(Reorder_Buffer *rb){
  * @return NULL if reorder buffer is free, reorder buffer otherwise
  *
  * @details One should free memory using free() function to avoid memory leaks
- *
  */
 Reorder_Buffer* freesReorderBuffer(Reorder_Buffer *rb) {
 	int i = 0;

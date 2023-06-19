@@ -52,9 +52,13 @@ Reservation_Station* reservationStationInitializer(){
 	
 	for(int i = 0; i < MAX_LINES_RS; i++) {
 		rs->line[i].reservation_busy = NOT_BUSY;
+		rs->line[i].instruction_op = (char*) malloc ( SIZE_STR * sizeof(char) );
+		rs->line[i].value_register_read_Vj = (char*) malloc ( SIZE_STR * sizeof(char) );
+		rs->line[i].value_register_read_Vk = (char*) malloc ( SIZE_STR * sizeof(char) );
 		rs->line[i].information_dependency_Qj = -1;
 		rs->line[i].information_dependency_Qk = -1;
 		rs->line[i].position_destination_rb = -1;
+		rs->line[i].memory_address = (char*) malloc ( SIZE_STR * sizeof(char) );
 	}
 
 	return rs;
@@ -148,9 +152,6 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 
 	if (positionRS != -1) {
 		reservationStation->line[positionRS].reservation_busy = BUSY;
-		if (reservationStation->line[positionRS].instruction_op == NULL) {
-			reservationStation->line[positionRS].instruction_op = (char*) malloc ( SIZE_STR * sizeof(char) );
-		}
 		strcpy(reservationStation->line[positionRS].instruction_op, instruction->splitted_instruction[0]);
 		if ( instruction->type == LOAD ) {
 
@@ -172,30 +173,65 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 		}
 		
 		if ( reservationStation->line[positionRS].information_dependency_Qj == -1 ) {
-			if (reservationStation->line[positionRS].value_register_read_Vj == NULL) {
-				reservationStation->line[positionRS].value_register_read_Vj = (char*) malloc ( SIZE_STR * sizeof(char) );
-			}
 			strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[2] );
 		}
 		if ( reservationStation->line[positionRS].information_dependency_Qk == -1 ) {
-			if (reservationStation->line[positionRS].value_register_read_Vk == NULL) {
-				reservationStation->line[positionRS].value_register_read_Vk = (char*) malloc ( SIZE_STR * sizeof(char) );
-			}
 			strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[3] );
 		}
 		
 		reservationStation->line[positionRS].position_destination_rb = instruction->reorder_buffer_position;
+		
 		if ( instruction->type == LOAD ) {
 			char* memory_address = (char*) malloc( SIZE_STR * sizeof(char) );
-			strcat(memory_address, instruction->splitted_instruction[2]);
-			strcat(memory_address, " + Regs[");
-			strcat(memory_address, instruction->splitted_instruction[3]);
-			strcat(memory_address, "]");
-			reservationStation->line[positionRS].memory_address = memory_address;
+			strcpy(memory_address, "");
+			size_t vasco = 0;
+			for( ; vasco < strlen(instruction->splitted_instruction[2]); vasco++) {
+				memory_address[vasco] = instruction->splitted_instruction[2][vasco];
+			}
+			memory_address[vasco++] = ' ';
+			memory_address[vasco++] = '+';
+			memory_address[vasco++] = ' ';
+			memory_address[vasco++] = 'R';
+			memory_address[vasco++] = 'e';
+			memory_address[vasco++] = 'g';
+			memory_address[vasco++] = 's';
+			memory_address[vasco++] = '[';
+			size_t flamengo = 0;
+			for( ; flamengo < strlen(instruction->splitted_instruction[3]); flamengo++) {
+				memory_address[vasco++] = instruction->splitted_instruction[3][flamengo];
+			}
+			memory_address[vasco++] = ']';
+			memory_address[vasco++] = '\0';
+			strcpy(reservationStation->line[positionRS].memory_address, memory_address );
 		}
 	}
 
 	return positionRS;
+}
+
+/**
+ * @brief Find reservation station line according to position in reorder buffer
+ *
+ * @param rs 			Structure that holds all the lines of the reservation station
+ * @param positionRB	Position in reorder buffer
+ *
+ * @details Find reservation station line according to position in reorder buffer
+ *
+ * @return 	Returns the line position of the reservation station that the position 
+ * 			instruction is in the reorder buffer, or if no line is found, returns -1
+*/
+int findLineRSAccordingPositionRB (Reservation_Station *rs, int positionRB) {
+	int position_line_rs = -1;
+
+	for( int i = 0; i < MAX_LINES_RS; i++ ) {
+
+		if (rs->line[i].position_destination_rb == positionRB) {
+			position_line_rs = i;
+			i = MAX_LINES_RS;
+		}
+	}
+
+	return position_line_rs;
 }
 
 /**

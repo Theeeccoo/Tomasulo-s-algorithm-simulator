@@ -18,7 +18,7 @@
 #define BOOL	 	int
 #define TRUE	 	1
 #define FALSE	 	0 
-#define SIZE_STR	30 
+#define SIZE_STR	30
 
 #ifndef RESERVATION_STATION_LINE_
 
@@ -87,6 +87,7 @@
 /**@{*/
 extern Reservation_Station* reservationStationInitializer();
 extern int insertInstructionRS(Instruction *instruction, Reservation_Station *reservationStation, Reorder_Buffer *rb);
+extern int findLineRSAccordingPositionRB (Reservation_Station *rs, int positionRB);
 extern int dontDoWrite(char* nameInstruction);
 extern int warDependencyIdentifier(char*, int, Reorder_Buffer*);
 extern void printReservationStation(Reservation_Station*);

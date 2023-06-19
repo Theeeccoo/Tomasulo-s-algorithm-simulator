@@ -20,7 +20,7 @@
 #define BOOL	 	int
 #define TRUE	 	1
 #define FALSE	 	0 
-#define SIZE_STR	30 
+#define SIZE_STR	30
 
 #ifndef REGISTER_STATUS_COLUMN_
 

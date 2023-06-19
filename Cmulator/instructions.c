@@ -70,6 +70,40 @@ char** splitInstruction(char *instruction){
 	return splitted_string;
 }
 
+/**
+ * @brief Clone an instruction
+ *
+ * @param instruction_origin Original instruction
+ *
+ * @details Clones all attributes of a statement
+ *
+ * @returns The cloned instruction
+ */
+Instruction* cloneInstruction (Instruction* instruction_origin) {
+	Instruction* instruction = (Instruction*) malloc( sizeof(Instruction) );
+	
+	int i = 0;
+	instruction->full_instruction = (char*) malloc ( SIZE_STR * sizeof(char) );
+	strcpy(instruction->full_instruction, instruction_origin->full_instruction);
+	instruction->issued = instruction_origin->issued;
+	instruction->reorder_buffer_position = instruction_origin->reorder_buffer_position;
+	instruction->type = instruction_origin->type;
+
+	instruction->time = (float*) calloc( SIZE_TIME, sizeof(float) );
+	for(i = 0; i < SIZE_TIME; i++) {
+		instruction->time[i] = instruction_origin->time[i];
+	}
+
+	instruction->splitted_instruction = (char**) malloc(( 5 * (sizeof(char*)) ));
+	for (i = 0; i < 5; i++) {
+		if ( instruction_origin->splitted_instruction[i] != NULL ) {
+			instruction->splitted_instruction[i] = (char*) malloc( 10 * sizeof(char) );
+			strcpy(instruction->splitted_instruction[i], instruction_origin->splitted_instruction[i]);
+		}
+	}
+
+	return instruction;
+}
 
 /**
  * @brief Counts the number of lines of a file
@@ -161,7 +195,7 @@ Instruction* instructionsInitializer(char* filename){
 		instructions[i].full_instruction = (char*) malloc ( SIZE_STR * sizeof(char) );
 		strcpy(instructions[i].full_instruction, instructionsRead[i]);
 		instructions[i].splitted_instruction = splitInstruction(instructionsRead[i]);
-		instructions[i].time = (float*) calloc( 5, sizeof(float) );
+		instructions[i].time = (float*) calloc( SIZE_TIME, sizeof(float) );
 	}	
 
 	return instructions;
@@ -216,11 +250,13 @@ void printTimeInstructions(Instruction *instructions, int amount_instructions) {
 	printf("Instruction\t\tWAITING\t\tISSUE\t\tEXECUTING\tWRITE_RESULT\tCOMMITED\n");
 
 	for (int i = 0; i < amount_instructions; i++) {
-		printf("%s\t\t", instructions[i].full_instruction);
-		printf("%.2fms\t\t",instructions[i].time[0]);
-		printf("%.2fms\t\t",instructions[i].time[1]);
-		printf("%.2fms\t\t",instructions[i].time[2]);
-		printf("%.2fms\t\t",instructions[i].time[3]);
-		printf("%.2fms\n",instructions[i].time[4]);
+		if ((strstr(instructions[i].full_instruction, ":") == NULL)) {
+			printf("%s\t\t", instructions[i].full_instruction);
+			printf("%.2fms\t\t",instructions[i].time[0]);
+			printf("%.2fms\t\t",instructions[i].time[1]);
+			printf("%.2fms\t\t",instructions[i].time[2]);
+			printf("%.2fms\t\t",instructions[i].time[3]);
+			printf("%.2fms\n",instructions[i].time[4]);
+		}
 	}
 }

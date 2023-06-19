@@ -17,8 +17,7 @@
 #define BOOL	 	int
 #define TRUE	 	1
 #define FALSE	 	0 
-#define SIZE_STR	30 
-
+#define SIZE_STR	30
 #ifndef _REORDER_BUFFER_LINE_
 
 		/**
@@ -86,5 +85,6 @@
 extern Reorder_Buffer* reorderBufferInitializer();
 extern int insertInstructionRB(Instruction*, Reorder_Buffer*);
 extern void printReorderBuffer(Reorder_Buffer*);
+extern void freeLineReorderBuffer(Reorder_Buffer *rb, int positionToFree);
 extern Reorder_Buffer* freesReorderBuffer(Reorder_Buffer*);
 /**@}*/

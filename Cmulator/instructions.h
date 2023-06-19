@@ -13,7 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-	#define SIZE_STR	30 
+	#define SIZE_STR	30
+	#define SIZE_TIME	5
 
 	/**
 	 * @name Instruction types
@@ -51,6 +52,7 @@ extern Instruction* instructionsInitializer(char*);
 extern char** readInstructions(char*, int);
 extern int numberOfLines(char*);
 extern char** splitInstruction(char*);
+extern Instruction* cloneInstruction (Instruction* instruction_origin);
 extern int findNumberOfJumps( Instruction*, int, char*, int );
 extern void printInstructions(Instruction*, char*);
 extern void insertTime (char* full_instruction, Instruction *instructions, int position, int amount_instructions, float seconds);
