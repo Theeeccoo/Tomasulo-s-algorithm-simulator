@@ -251,7 +251,10 @@ void printTimeInstructions(Instruction *instructions, int amount_instructions) {
 
 	for (int i = 0; i < amount_instructions; i++) {
 		if ((strstr(instructions[i].full_instruction, ":") == NULL)) {
-			printf("%s\t\t", instructions[i].full_instruction);
+			printf("%s\t", instructions[i].full_instruction);
+			if ( strcmp(instructions[i].splitted_instruction[0], "BEQ") != 0 && strcmp(instructions[i].splitted_instruction[0], "BNE") != 0 ) {
+				printf("\t");
+			}
 			printf("%.2fms\t\t",instructions[i].time[0]);
 			printf("%.2fms\t\t",instructions[i].time[1]);
 			printf("%.2fms\t\t",instructions[i].time[2]);

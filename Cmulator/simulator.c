@@ -89,7 +89,7 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 		init = rb->filled_lines % rb->max_lines_rb_allocated,
 		end = ((init - 1) < 0 ? (rb->max_lines_rb_allocated - 1) : (init - 1));
 		fprintf(arquivo, "%s", "\t\t\t\t\t\t\t\t\t\t\t\t\t\tReorder Buffer\n\n");
-		fprintf(arquivo, "%s",  "Entry\tBusy\tInstruction\t\t\t\tState\t\t\t\t\tDestination\t\tValue\n");
+		fprintf(arquivo, "%s",  "Entry\tBusy\tInstruction\t\t\t\t\t\tState\t\t\t\t\tDestination\t\tValue\n");
 		
 		for( i = init; i != end; i = ((i + 1) % rb->max_lines_rb_allocated) ) {
 			fprintf(arquivo, "  %d\t\t", i);
@@ -97,6 +97,9 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 			fprintf(arquivo, "%s\t\t", rb->line[i].instruction->full_instruction);
 			if (rb->line[i].instruction->type == LOAD || strcmp(rb->line[i].instruction->splitted_instruction[0], "OR") == 0 ) {
 				fprintf(arquivo, "\t");
+			}
+			if ( rb->line[i].instruction->type != BRANCH ) {
+				fprintf(arquivo, "\t\t");
 			}
 			fprintf(arquivo, "%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
 			if (rb->line[i].instruction_state == ISSUE) {
@@ -116,9 +119,11 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 		fprintf(arquivo, "%s\t\t", rb->line[end].instruction->full_instruction);
 		
 		if (rb->line[end].instruction->type == LOAD || strcmp(rb->line[end].instruction->splitted_instruction[0], "OR") == 0 ) {
-				fprintf(arquivo, "\t");
+			fprintf(arquivo, "\t");
 		}
-			
+		if ( rb->line[end].instruction->type != BRANCH ) {
+			fprintf(arquivo, "\t\t");
+		}	
 		fprintf(arquivo, "%s\t", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
 		if (rb->line[end].instruction_state == ISSUE) {
 			fprintf(arquivo, "\t\t\t\t");
@@ -150,8 +155,8 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 			} else if (strcmp(rs->line[i].instruction_op, "SLTI") != 0) {
 				fprintf(arquivo, "\t");
 			}
-			fprintf(arquivo, "%s\t\t\t\t", (rs->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(rs->line[i].value_register_read_Vj, "") == 0 ? "-" : rs->line[i].value_register_read_Vj)));
-			if (rs->line[i].value_register_read_Vj == NULL || strcmp(rs->line[i].value_register_read_Vj, "") == 0) {
+			fprintf(arquivo, "%s\t\t\t\t", (rs->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(rs->line[i].value_register_read_Vj, "") == 0 ? "-" : (strcmp(rs->line[i].instruction_op, "LW") == 0 ? "-" : rs->line[i].value_register_read_Vj))));
+			if (rs->line[i].value_register_read_Vj == NULL || strcmp(rs->line[i].value_register_read_Vj, "") == 0 || strcmp(rs->line[i].instruction_op, "LW") == 0) {
 				fprintf(arquivo, "\t");
 			}
 			fprintf(arquivo, "%s\t\t\t\t", (rs->line[i].value_register_read_Vk == NULL ? "-" : (strcmp(rs->line[i].value_register_read_Vk, "") == 0 ? "-" : rs->line[i].value_register_read_Vk)));
@@ -452,16 +457,10 @@ void initializer(char* filename){
 				if ( rs->line[j].reservation_busy == NOT_BUSY ) continue;
 
 				if ( rs->line[j].information_dependency_Qj == inst_position ) {
-					if (rs->line[j].value_register_read_Vj == NULL) {
-						rs->line[j].value_register_read_Vj = (char*) malloc( sizeof(char) * SIZE_STR );
-					}
 					strcpy( rs->line[j].value_register_read_Vj, rb->line[inst_position].instruction->splitted_instruction[1] );
 					rs->line[j].information_dependency_Qj = -1;
 				}
 				if ( rs->line[j].information_dependency_Qk == inst_position ) {
-					if (rs->line[j].value_register_read_Vk == NULL) {
-						rs->line[j].value_register_read_Vk = (char*) malloc( sizeof(char) * SIZE_STR );
-					}
 					strcpy( rs->line[j].value_register_read_Vk, rb->line[inst_position].instruction->splitted_instruction[1] );
 					rs->line[j].information_dependency_Qk = -1;	
 				}
@@ -479,7 +478,6 @@ void initializer(char* filename){
 									(rb->max_lines_rb_allocated - 1) :
 									(init - 1)) % rb->max_lines_rb_allocated);
 					int k = ((inst_position + 1) >= rb->max_lines_rb_allocated ? ((inst_position + 1) % rb->max_lines_rb_allocated) : (inst_position + 1));
-					printf("k (%d) == init (%d) : %d", k, init, (k == init));
 					for ( ; k != init; k = (k + 1) % rb->max_lines_rb_allocated ) {
 						// If reorder buffer status is ISSUE or EXECUTING need to clear reservation station
 						if ( rb->line[k].instruction_state == ISSUE || rb->line[k].instruction_state == EXECUTING) { 
@@ -521,7 +519,6 @@ void initializer(char* filename){
 		int controll_commit = 0;
 		
 		for ( i = init; i != end && controll_commit == 0; i = (i + 1) % rb->max_lines_rb_allocated ) {
-			printf("#i: %d   -   state: %d   -     busy: %d\n", i, rb->line[i].instruction_state, rb->line[i].instruction_execution);
 			if ( rb->line[i].instruction_state == WRITE_RESULT && rb->line[i].instruction_execution == BUSY) {
 				rb->line[i].instruction_state = COMMITED;
 				rb->line[i].instruction_execution = NOT_BUSY;

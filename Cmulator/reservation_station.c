@@ -173,7 +173,11 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 		}
 		
 		if ( reservationStation->line[positionRS].information_dependency_Qj == -1 ) {
-			strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[2] );
+			if ( strcmp(instruction->splitted_instruction[0], "SW") == 0 ) {
+				strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[1] );
+			} else {
+				strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[2] );
+			}
 		}
 		if ( reservationStation->line[positionRS].information_dependency_Qk == -1 ) {
 			strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[3] );
@@ -301,7 +305,7 @@ void printReservationStation(Reservation_Station *reservationStation){
 		}
 		printf("%s\t", ( reservationStation->line[i].reservation_busy == NOT_BUSY ) ? "No\0" : "Yes\0");
 		printf("%s\t\t", (reservationStation->line[i].instruction_op == NULL ? "-" : (strcmp(reservationStation->line[i].instruction_op, "") == 0 ? "-" : reservationStation->line[i].instruction_op) ));
-		printf("%s\t\t", (reservationStation->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(reservationStation->line[i].value_register_read_Vj, "") == 0 ? "-" : reservationStation->line[i].value_register_read_Vj)));
+		printf("%s\t\t", (reservationStation->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(reservationStation->line[i].value_register_read_Vj, "") == 0 ? "-" : (strcmp(reservationStation->line[i].instruction_op, "LW") == 0 ? "-" : reservationStation->line[i].value_register_read_Vj))));
        	printf("%s\t\t", (reservationStation->line[i].value_register_read_Vk == NULL ? "-" : (strcmp(reservationStation->line[i].value_register_read_Vk, "") == 0 ? "-" : reservationStation->line[i].value_register_read_Vk)));
         printf("%d\t", reservationStation->line[i].information_dependency_Qj);
         printf("%d\t", reservationStation->line[i].information_dependency_Qk);

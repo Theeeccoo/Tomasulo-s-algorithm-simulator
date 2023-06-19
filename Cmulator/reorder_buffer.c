@@ -80,6 +80,9 @@ void printReorderBuffer(Reorder_Buffer *rb){
 		if ( rb->line[i].instruction->type != BRANCH ) {
 			printf("\t");
 		}
+		if ( rb->line[i].instruction->full_instruction == NULL || strcmp(rb->line[i].instruction->full_instruction, "") == 0 ) {
+			printf("\t");
+		}
 		printf("%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
 		if ( rb->line[i].instruction_state < 2 ) {
 			printf("\t");
@@ -94,6 +97,9 @@ void printReorderBuffer(Reorder_Buffer *rb){
 	if ( rb->line[i].instruction->type != BRANCH ) {
 			printf("\t");
 	}
+	if ( rb->line[end].instruction->full_instruction == NULL || strcmp(rb->line[end].instruction->full_instruction, "") == 0 ) {
+			printf("\t");
+		}
 	printf("%s\t", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
 	if ( rb->line[end].instruction_state < 2 ) {
 		printf("\t");
