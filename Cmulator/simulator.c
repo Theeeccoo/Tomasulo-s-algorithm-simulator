@@ -222,23 +222,34 @@ int noDependencies(int qj, int qk){
 }
 
 void initializer(char* filename){
+
+	system(" cls || clear ");
+	printf("You are using a Tomasulo's Algorithm Simulator created by students\nThe following Instructions will run on it:\n");
 	Reorder_Buffer *rb = reorderBufferInitializer();
 	Instruction *instructions = instructionsInitializer(filename);
 	Reservation_Station *rs = reservationStationInitializer();
 	Register_status *registerRename = registerStatusInitializer();
+
+	printInstructions(instructions, filename);
+	fflush(stdin);
+	printf("\n\n**Press enter to continue your execution. . .\n");
+	getchar();
+	system("cls || clear");
+	
 	int number_of_instructions = numberOfLines(filename);
 	int init = rb->filled_lines % MAX_LINES,
 	    end  = ((init - 1) % MAX_LINES < 0) ? MAX_LINES - 1 : (init - 1);
 	int i, j, aux, 
-	    old_position = 0,
 	    position = 0;
+	int old_position[MAX_LINES];
 	int *position_run = (int*) calloc( MAX_LINES_RS, sizeof(int) );
 	clock_t start, endTime;
 	float elapsed_milliseconds;
 	start = clock();
-	printf("Number of lines: %d\n", number_of_instructions);
-	
-	printInstructions(instructions, filename);
+
+	// Opening it just to clean the output file.
+	FILE* table = fopen("tables.txt", "wt");
+	fclose(table);
 
 	// Initialize vector that will store positions that will be executed, to later advance data
 	for (i = 0; i < MAX_LINES_RS; i++) {
@@ -279,11 +290,11 @@ void initializer(char* filename){
 				rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] );
 
 				if ( rb->line[i].instruction->type == BRANCH ) {
-					old_position = position;
+					old_position[i] = position;
 					position += findNumberOfJumps( instructions,
 							               number_of_instructions,
 							               rb->line[i].instruction->splitted_instruction[3],
-								       old_position );
+								       old_position[i] );
 				} 
 				position ++;
 			}
@@ -309,11 +320,11 @@ void initializer(char* filename){
 			rb->line[i].instruction->type = decoder( rb->line[i].instruction->splitted_instruction[0] ); 
 			
 			if ( rb->line[i].instruction->type == BRANCH ) {
-				old_position = position;
+				old_position[i] = position;
 				position += findNumberOfJumps( instructions,
 						               number_of_instructions,
 					        	       rb->line[i].instruction->splitted_instruction[3],
-							       old_position );
+							       old_position[i] );
 			} 
 			position ++;
 		
@@ -323,7 +334,7 @@ void initializer(char* filename){
 		printRegisterStatus(registerRename);
 
 		fflush(stdin);
-		printf("\n\n**Press Enter to continue your execution. . .\n");
+		printf("\n\n**press enter to continue your execution. . .\n");
 		getchar();
 		system("cls || clear");
 
@@ -466,10 +477,10 @@ void initializer(char* filename){
 				}
 			}
 			
-			if ( rb->line[inst_position].instruction->type == BRANCH  ) {
+			if ( rb->line[inst_position].instruction->type == BRANCH ) {
 				// If it was not meant to branch, then we need to make it all back to what it waas
 				if ( strcmp( rb->line[inst_position].instruction->splitted_instruction[4], "#0" ) == 0 ) {
-					position = old_position;
+					position = old_position[inst_position];
 					position++;
 					// Iterate through the reorder buffer from the current position(+1) of the branch to the init position
 					
@@ -544,6 +555,7 @@ void initializer(char* filename){
 		getchar();
 		system("cls || clear");
 	}
+	printf("Simulation finished successfully. . .\n");
 	printTimeInstructions(instructions, number_of_instructions);
 }
 

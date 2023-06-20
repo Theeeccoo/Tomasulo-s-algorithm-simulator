@@ -205,7 +205,7 @@ Instruction* instructionsInitializer(char* filename){
 void printInstructions(Instruction *it, char* filePath){
 	int	i,
 		size = numberOfLines(filePath);
-	printf("Instrucoes: \n");
+	printf("Instructions: \n");
 	for ( i = 0; i < size ; i++ ){
 		printf("%s\n", it[i].full_instruction);
 	}

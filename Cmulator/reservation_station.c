@@ -53,12 +53,16 @@ Reservation_Station* reservationStationInitializer(){
 	for(int i = 0; i < MAX_LINES_RS; i++) {
 		rs->line[i].reservation_busy = NOT_BUSY;
 		rs->line[i].instruction_op = (char*) malloc ( SIZE_STR * sizeof(char) );
+		strcpy(rs->line[i].instruction_op, "-");
 		rs->line[i].value_register_read_Vj = (char*) malloc ( SIZE_STR * sizeof(char) );
+		strcpy(rs->line[i].value_register_read_Vj, "-");
 		rs->line[i].value_register_read_Vk = (char*) malloc ( SIZE_STR * sizeof(char) );
+		strcpy(rs->line[i].value_register_read_Vk, "-");
 		rs->line[i].information_dependency_Qj = -1;
 		rs->line[i].information_dependency_Qk = -1;
 		rs->line[i].position_destination_rb = -1;
 		rs->line[i].memory_address = (char*) malloc ( SIZE_STR * sizeof(char) );
+		strcpy(rs->line[i].memory_address, "-");
 	}
 
 	return rs;
