@@ -4,7 +4,7 @@ This project is a simulator for Tomasulo's Algorithm, an innovative solution dev
 
 <ol>
     <li> <strong>Improved IPC (Instructions per Clock/Cycle):</strong> By allowing instructions to execute out of order, the algorithm maximizes the utilization of functional units and enhances overall performance. </li>
-    <li> <strong>Enhanced Hazard Control:</strong> Tomasulo's Algorithm introduces a way to prevent stalls created from the additional hazards that a Superscalar processor could create (WAR (Write After Read) and WAW (Write After Write)) in addition to the classical RAW (Read After Write) hazard. By effectively managing these hazards, the algorithm reduces execution errors and ensures accurate results.</li>
+    <li> <strong>Enhanced Hazard Control:</strong> Tomasulo's Algorithm introduces a way to prevent stalls created from the additional hazards that a Superscalar processor could create (Write after Read (WaR) and Write After Write (WaW)) in addition to the classical RaW (Read After Write) hazard. By effectively managing these hazards, the algorithm reduces execution errors and ensures accurate results.</li>
 </ol>
 
 To prevent stalls caused by false dependencies, Tomasulo's algorithm incorporates **register renaming** through reservation stations. These stations act as intermediate buffers, allowing instructions to operate independently of specific registers and promoting concurrent execution. The out-of-order issue and commit are granted by the Reorder buffer, which prevents an instruction to commit before every single instruction decodified before it.
@@ -38,7 +38,7 @@ In this project the Branch is always considered as taken, and its Branch value (
     <li> Add your instructions to be analysed at "input.txt" </li>
 	<ol>
 		<li> If you want, you can use the Examples pre-created by the authors </li>
-                <li> It will be needed to change the File Path in "simulator.c" (at main) </li>
+        <li> It will be needed to change the File Path in "simulator.c" (at main) </li>
 	</ol>
     <li> Run the simulator: `make all`</li>
     <li> Follow the on-screen instructions to input the necessary parameters.</li>
