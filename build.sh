@@ -8,7 +8,7 @@ then
 		exit 1
 	fi
 
-	brew install binutils gcc
+	brew install binutils gcc make
 	exit 0
 fi
 
@@ -22,5 +22,5 @@ case ${DIST,,} in
 		pacman -S gcc binutils make --need -noconfirm
 		;;
 	*)
-		echo "Distro not found: Need to install gcc (any C compiler) and make"
+		echo "Distro not found: Need to install gcc (or any C compiler) and make"
 esac

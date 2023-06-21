@@ -1,10 +1,1 @@
-ADD R1, R2, R3
-SUB R1, R2, R3
-BEQ R1, R2, R3
-MUL R1, R2, R3
-LW  R1, 0(R1)
-SW  R3, 0(R4)
-bne R1, R2, R3
-ADD R1, R2, R3
-SLT R1, R2, R3
-ADD R1, R2, R3
+/* Here comes your input! */
