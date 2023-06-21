@@ -109,7 +109,11 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 			} else if (rb->line[i].instruction_state == EXECUTING || rb->line[i].instruction_state == COMMITED) {
 				fprintf(arquivo, "\t\t");
 			}
-			fprintf(arquivo, "    %s\t\t\t\t", rb->line[i].instruction->splitted_instruction[1]);
+			if (rb->line[i].instruction->type == BRANCH || (rb->line[i].instruction->splitted_instruction[0] != NULL && strcmp(rb->line[i].instruction->splitted_instruction[0], "SW") == 0)) {
+				fprintf(arquivo, "    -\t\t\t\t");
+			} else {
+				fprintf(arquivo, "    %s\t\t\t\t", rb->line[i].instruction->splitted_instruction[1]);			
+			}
 			fprintf(arquivo, "%s\n", rb->line[i].instruction_result);
 		}
 		
@@ -132,7 +136,11 @@ void writeTablesToFile (char* fileName, char *writing_mode, Reorder_Buffer *rb, 
 		} else if (rb->line[end].instruction_state == EXECUTING || rb->line[end].instruction_state == COMMITED) {
 			fprintf(arquivo, "\t\t");
 		}
-		fprintf(arquivo, "    %s\t\t\t\t", rb->line[end].instruction->splitted_instruction[1]);
+		if (rb->line[end].instruction->type == BRANCH || (rb->line[end].instruction->splitted_instruction[0] != NULL && strcmp(rb->line[end].instruction->splitted_instruction[0], "SW") == 0)) {
+			fprintf(arquivo, "    -\t\t\t\t");
+		} else {
+			fprintf(arquivo, "    %s\t\t\t\t", rb->line[end].instruction->splitted_instruction[1]);
+		}
 		fprintf(arquivo, "%s\n", rb->line[end].instruction_result);
 		
 
@@ -232,7 +240,7 @@ void initializer(char* filename){
 
 	printInstructions(instructions, filename);
 	fflush(stdin);
-	printf("\n\n**Press enter to continue your execution. . .\n");
+	printf("\n\n**Press Enter to continue your execution. . .\n");
 	getchar();
 	system("cls || clear");
 	
@@ -334,7 +342,7 @@ void initializer(char* filename){
 		printRegisterStatus(registerRename);
 
 		fflush(stdin);
-		printf("\n\n**press enter to continue your execution. . .\n");
+		printf("\n\n**Press Enter to continue your execution. . .\n");
 		getchar();
 		system("cls || clear");
 
@@ -431,13 +439,8 @@ void initializer(char* filename){
 					   WRITE_RESULT,
 					   number_of_instructions,
 					   elapsed_milliseconds);
-				// If instruction writes to register, put position of reorder buffer
-				// where instruction is in destination register
-				if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
-					insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
-				}
+				
 				// Get the result and write it to the reorder buffer
-			
 				strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction, registerRename) );
 			}
 		}
@@ -449,11 +452,6 @@ void initializer(char* filename){
 				   number_of_instructions,
 				   elapsed_milliseconds);
 
-			// If instruction writes to register, put position of reorder buffer
-			// where instruction is in destination register
-			if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
-				insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
-			}
 			// Get the result and write it to the reorder buffer
 			strcpy( rb->line[i].instruction_result, calculateResult(rb->line[i].instruction, registerRename) );
 		}
@@ -532,6 +530,11 @@ void initializer(char* filename){
 		for ( i = init; i != end && controll_commit == 0; i = (i + 1) % rb->max_lines_rb_allocated ) {
 			if ( rb->line[i].instruction_state == WRITE_RESULT && rb->line[i].instruction_execution == BUSY) {
 				rb->line[i].instruction_state = COMMITED;
+				// If instruction writes to register, put position of reorder buffer
+				// where instruction is in destination register
+				if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
+					insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
+				}
 				rb->line[i].instruction_execution = NOT_BUSY;
 				insertTime(rb->line[i].instruction->full_instruction, instructions, COMMITED, number_of_instructions, elapsed_milliseconds);
 			} else if ( rb->line[i].instruction_state != COMMITED ) {
@@ -541,6 +544,11 @@ void initializer(char* filename){
 		}
 		if (controll_commit == 0 && rb->line[end].instruction_state == WRITE_RESULT && rb->line[i].instruction_execution == BUSY) {
 			rb->line[end].instruction_state = COMMITED;
+			// If instruction writes to register, put position of reorder buffer
+			// where instruction is in destination register
+			if (dontDoWrite(rb->line[i].instruction->splitted_instruction[0]) == 0) {
+				insertRegisterStatus( rb->line[i].instruction->splitted_instruction[1], i, registerRename);
+			}
 			rb->line[end].instruction_execution = NOT_BUSY;
 			insertTime(rb->line[end].instruction->full_instruction, instructions, COMMITED, number_of_instructions, elapsed_milliseconds);
 		}

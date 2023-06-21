@@ -1,10 +1,10 @@
 # Instructions
 At the moment, in our simulation we support 17 RISC-V-like instructions, and we divide them as follows:
 <ol>
-    <li> MEMORY:
+    <li> LOAD:
         <ol> 
             <li> SW REGISTER, Offset(REGISTER) </li>
-            <li> LW REGISTER, Offset(REGISTER) </li>
+            <li> LW DESTINATION, Offset(REGISTER) </li>
         </ol>
     </li>
     <li> ADD:
@@ -22,25 +22,25 @@ At the moment, in our simulation we support 17 RISC-V-like instructions, and we 
     </li>
     <li> BRANCH:
         <ol> 
-            <li> BNE, REGISTER, REGISTER, LABEL, #VALUE </li>
-            <li> BEQ, REGISTER, REGISTER, LABEL, #VALUE </li>
+            <li> BNE REGISTER, REGISTER, LABEL, #VALUE </li>
+            <li> BEQ REGISTER, REGISTER, LABEL, #VALUE </li>
         </ol>
         In this instructions, "LABEL" means where the branch should go. For safety reasons, our simulator only allows labels with length equals to 3. #VALUE can have only two values, 0 or 1. If 0, means that it WON'T branch, if 1, will BRANCH.
     </li>
         <li> COMPARISON:
         <ol> 
-            <li> SLT, REGISTER, REGISTER </li>
-            <li> SLTI, REGISTER, NUMBER </li>
+            <li> SLT DESTINATION, REGISTER, REGISTER </li>
+            <li> SLTI DESTINATION, REGISTER, NUMBER </li>
         </ol>
     </li>
     <li> LOGICAL:
         <ol> 
-            <li> OR, REGISTER, REGISTER </li>
-            <li> AND, REGISTER, REGISTER </li>
-            <li> XOR, REGISTER, REGISTER </li>
-            <li> SLL, REGISTER, REGISTER </li>
-            <li> SRL, REGISTER, REGISTER </li>
-            <li> SRA, REGISTER, REGISTER </li>
+            <li> OR DESTINATION, REGISTER, REGISTER </li>
+            <li> AND DESTINATION, REGISTER, REGISTER </li>
+            <li> XOR DESTINATION, REGISTER, REGISTER </li>
+            <li> SLL DESTINATION, REGISTER, NUMBER </li>
+            <li> SRL DESTINATION, REGISTER, NUMBER </li>
+            <li> SRA DESTINATION, REGISTER, NUMBER </li>
         </ol>
     </li>
 </ol>

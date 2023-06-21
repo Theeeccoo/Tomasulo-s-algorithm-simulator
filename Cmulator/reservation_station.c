@@ -177,14 +177,18 @@ int insertInstructionRS(Instruction *instruction, Reservation_Station *reservati
 		}
 		
 		if ( reservationStation->line[positionRS].information_dependency_Qj == -1 ) {
-			if ( strcmp(instruction->splitted_instruction[0], "SW") == 0 ) {
+			if ( strcmp(instruction->splitted_instruction[0], "SW") == 0 || instruction->type == BRANCH) {
 				strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[1] );
 			} else {
 				strcpy( reservationStation->line[positionRS].value_register_read_Vj, instruction->splitted_instruction[2] );
 			}
 		}
 		if ( reservationStation->line[positionRS].information_dependency_Qk == -1 ) {
-			strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[3] );
+			if (instruction->type == BRANCH) {
+				strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[2] );
+			} else {
+				strcpy( reservationStation->line[positionRS].value_register_read_Vk, instruction->splitted_instruction[3] );
+			}
 		}
 		
 		reservationStation->line[positionRS].position_destination_rb = instruction->reorder_buffer_position;

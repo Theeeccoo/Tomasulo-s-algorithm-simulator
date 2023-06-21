@@ -87,7 +87,11 @@ void printReorderBuffer(Reorder_Buffer *rb){
 		if ( rb->line[i].instruction_state < 2 ) {
 			printf("\t");
 		}
-		printf("    %s\t\t", (rb->line[i].instruction->splitted_instruction[1] == NULL ? "-" : (strcmp(rb->line[i].instruction->splitted_instruction[1], "") == 0 ? "-" : rb->line[i].instruction->splitted_instruction[1])));
+		if (rb->line[i].instruction->type == BRANCH || (rb->line[i].instruction->splitted_instruction[0] != NULL && strcmp(rb->line[i].instruction->splitted_instruction[0], "SW") == 0)) {
+			printf("    %s\t\t", "-");
+		} else {
+			printf("    %s\t\t", (rb->line[i].instruction->splitted_instruction[1] == NULL ? "-" : (strcmp(rb->line[i].instruction->splitted_instruction[1], "") == 0 ? "-" : rb->line[i].instruction->splitted_instruction[1])));
+		}
 		printf("%s\n", (rb->line[i].instruction_result == NULL ? "-" : (strcmp(rb->line[i].instruction_result, "") == 0 ? "-" : rb->line[i].instruction_result)));
 	}
 	// Print the last position alone
@@ -104,7 +108,11 @@ void printReorderBuffer(Reorder_Buffer *rb){
 	if ( rb->line[end].instruction_state < 2 ) {
 		printf("\t");
 	}
-	printf("    %s\t\t", (rb->line[end].instruction->splitted_instruction[1] == NULL ? "-" : (strcmp(rb->line[end].instruction->splitted_instruction[1], "") == 0 ? "-" : rb->line[end].instruction->splitted_instruction[1])));
+	if (rb->line[end].instruction->type == BRANCH || (rb->line[end].instruction->splitted_instruction[0] != NULL && strcmp(rb->line[end].instruction->splitted_instruction[0], "SW") == 0)) {
+		printf("    %s\t\t", "-");
+	} else {
+		printf("    %s\t\t", (rb->line[end].instruction->splitted_instruction[1] == NULL ? "-" : (strcmp(rb->line[end].instruction->splitted_instruction[1], "") == 0 ? "-" : rb->line[end].instruction->splitted_instruction[1])));
+	}
 	printf("%s\n", (rb->line[end].instruction_result == NULL ? "-" : (strcmp(rb->line[end].instruction_result, "") == 0 ? "-" : rb->line[end].instruction_result)));
 }
 
