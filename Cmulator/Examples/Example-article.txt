@@ -1,0 +1,15 @@
+SRA R2, R5, 2
+LW R5, 6(R2)
+ADD R22, R6, R3
+MUL R1, R2, R5
+BEQ R1, R2, foo #0
+XOR R10, R5, R9
+SUB R2, R2, R3
+foo:
+BNE R1, R5, bar #1
+REM R16, R2, R3
+SLT R30, R16, R15
+SLTI R4, R2, 5
+bar:
+OR R6, R7, R7
+SRL R4, R5, 8

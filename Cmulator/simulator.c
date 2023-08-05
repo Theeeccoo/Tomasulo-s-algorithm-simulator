@@ -568,6 +568,6 @@ void initializer(char* filename){
 }
 
 int main(void){
-	initializer("input.txt");
+	initializer("Examples/Example-article.txt");
 	return 0;
 }
