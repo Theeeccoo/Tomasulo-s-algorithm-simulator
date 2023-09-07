@@ -342,7 +342,7 @@ void initializer(char* filename){
 		printRegisterStatus(registerRename);
 
 		fflush(stdin);
-		printf("\n\n**Press Enter to continue your execution. . .\n");
+		printf("\n**Press Enter to continue your execution. . .\n");
 		getchar();
 		system("cls || clear");
 
@@ -384,7 +384,7 @@ void initializer(char* filename){
 		printRegisterStatus(registerRename);
 		
 		fflush(stdin);
-		printf("\n\n**Press Enter to continue your execution. . .\n");
+		printf("\n**Press Enter to continue your execution. . .\n");
 		getchar();
 		system("cls || clear");
 
@@ -559,7 +559,7 @@ void initializer(char* filename){
 		printRegisterStatus(registerRename);
 		
 		fflush(stdin);
-		printf("\n\n**Press Enter to continue your execution. . .\n");
+		printf("\n**Press Enter to continue your execution. . .\n");
 		getchar();
 		system("cls || clear");
 	}
