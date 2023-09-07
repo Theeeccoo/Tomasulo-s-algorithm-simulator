@@ -315,9 +315,21 @@ void printReservationStation(Reservation_Station *reservationStation){
 		printf("%s\t\t", (reservationStation->line[i].instruction_op == NULL ? "-" : (strcmp(reservationStation->line[i].instruction_op, "") == 0 ? "-" : reservationStation->line[i].instruction_op) ));
 		printf("%s\t\t", (reservationStation->line[i].value_register_read_Vj == NULL ? "-" : (strcmp(reservationStation->line[i].value_register_read_Vj, "") == 0 ? "-" : (strcmp(reservationStation->line[i].instruction_op, "LW") == 0 ? "-" : reservationStation->line[i].value_register_read_Vj))));
        	printf("%s\t\t", (reservationStation->line[i].value_register_read_Vk == NULL ? "-" : (strcmp(reservationStation->line[i].value_register_read_Vk, "") == 0 ? "-" : reservationStation->line[i].value_register_read_Vk)));
-        printf("%d\t", reservationStation->line[i].information_dependency_Qj);
-        printf("%d\t", reservationStation->line[i].information_dependency_Qk);
-		printf(" %d\t", reservationStation->line[i].position_destination_rb);
+        if (reservationStation->line[i].information_dependency_Qj == -1) {
+			printf("-\t");
+		} else {
+			printf("%d\t", reservationStation->line[i].information_dependency_Qj);
+		}
+		if (reservationStation->line[i].information_dependency_Qk == -1) {
+			printf("-\t");
+		} else {
+			printf("%d\t", reservationStation->line[i].information_dependency_Qk);
+		}
+		if (reservationStation->line[i].position_destination_rb == -1) {
+			printf(" -\t");
+		} else {
+			printf(" %d\t", reservationStation->line[i].position_destination_rb);
+		}
 		printf("%s\n", (reservationStation->line[i].memory_address == NULL ? "-" : (strcmp(reservationStation->line[i].memory_address, "") == 0 ? "-" : reservationStation->line[i].memory_address)));
 	}
 }

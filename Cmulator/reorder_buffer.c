@@ -77,10 +77,13 @@ void printReorderBuffer(Reorder_Buffer *rb){
 		printf("    %d\t\t", i);
 		printf("%s\t", ( rb->line[i].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
 		printf("%s\t\t", (rb->line[i].instruction->full_instruction == NULL ? "-" : (strcmp(rb->line[i].instruction->full_instruction, "") == 0 ? "-" : rb->line[i].instruction->full_instruction)));
-		if ( rb->line[i].instruction->type != BRANCH ) {
+		if ( rb->line[i].instruction->type != BRANCH && (strlen(rb->line[i].instruction->splitted_instruction[1]) + strlen(rb->line[i].instruction->splitted_instruction[2]) + strlen(rb->line[i].instruction->splitted_instruction[3])) < 9) {
 			printf("\t");
 		}
-		if ( rb->line[i].instruction->full_instruction == NULL || strcmp(rb->line[i].instruction->full_instruction, "") == 0 ) {
+		if ( (rb->line[i].instruction->full_instruction == NULL || strcmp(rb->line[i].instruction->full_instruction, "") == 0 || strcmp(rb->line[i].instruction->full_instruction, "-") == 0) && (strlen(rb->line[i].instruction->splitted_instruction[1]) + strlen(rb->line[i].instruction->splitted_instruction[2]) + strlen(rb->line[i].instruction->splitted_instruction[3])) < 9) {
+			printf("\t");
+		}
+		if (rb->line[i].instruction_execution == NOT_BUSY && i == 5 && (rb->line[i].instruction->full_instruction == NULL || strcmp(rb->line[i].instruction->full_instruction, "") == 0 || strcmp(rb->line[i].instruction->full_instruction, "-") == 0)) {
 			printf("\t");
 		}
 		printf("%s\t", (rb->line[i].instruction_state == WAITING ? "WAITING" : (rb->line[i].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[i].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[i].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));
@@ -98,10 +101,10 @@ void printReorderBuffer(Reorder_Buffer *rb){
 	printf("    %d\t\t", end);
 	printf("%s\t", ( rb->line[end].instruction_execution == NOT_BUSY ) ? "No\0" : "Yes\0");
 	printf("%s\t\t", (rb->line[end].instruction->full_instruction == NULL ? "-" : (strcmp(rb->line[end].instruction->full_instruction, "") == 0 ? "-" : rb->line[end].instruction->full_instruction)));
-	if ( rb->line[i].instruction->type != BRANCH ) {
+	if ( rb->line[i].instruction->type != BRANCH && (strlen(rb->line[i].instruction->splitted_instruction[1]) + strlen(rb->line[i].instruction->splitted_instruction[2]) + strlen(rb->line[i].instruction->splitted_instruction[3])) < 9) {
 			printf("\t");
 	}
-	if ( rb->line[end].instruction->full_instruction == NULL || strcmp(rb->line[end].instruction->full_instruction, "") == 0 ) {
+	if ( (rb->line[end].instruction->full_instruction == NULL || strcmp(rb->line[end].instruction->full_instruction, "") == 0) && (strlen(rb->line[i].instruction->splitted_instruction[1]) + strlen(rb->line[i].instruction->splitted_instruction[2]) + strlen(rb->line[i].instruction->splitted_instruction[3])) < 9) {
 			printf("\t");
 		}
 	printf("%s\t", (rb->line[end].instruction_state == WAITING ? "WAITING" : (rb->line[end].instruction_state == EXECUTING ? "EXECUTING" : (rb->line[end].instruction_state == WRITE_RESULT ? "WRITE_RESULT" : (rb->line[end].instruction_state == ISSUE ? "ISSUE" : "COMMITED")))));

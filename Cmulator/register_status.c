@@ -124,7 +124,7 @@ int insertRegisterStatus(char* fieldRegister, int entryReorderBuffer, Register_s
 void printRegisterStatus(Register_status* register_status){
 	int i = 0;
 	int aux = 0;
-	printf("\n\n\t\t\t\tRegister Status\n");
+	printf("\n\t\t\t\tRegister Status\n");
 
 	while (i < MAX_REGISTERS) {
 		aux = i;
@@ -134,7 +134,11 @@ void printRegisterStatus(Register_status* register_status){
 		}
 		printf("\n  Reorder#:\t");
 		for (aux = i; aux < (i + 8) && i < MAX_REGISTERS; aux++) {
-			printf("%d\t", register_status->column[aux].reorder_entry);
+			if (register_status->column[aux].reorder_entry == -1) {
+				printf("-\t");
+			} else {
+				printf("%d\t", register_status->column[aux].reorder_entry);
+			}
 		}
 		printf("\n  Busy:\t\t");
 		for (aux = i; aux < (i + 8) && i < MAX_REGISTERS; aux++) {
