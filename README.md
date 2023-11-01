@@ -11,12 +11,14 @@ To prevent stalls caused by false dependencies, Tomasulo's algorithm incorporate
 
 In this project the Branch is always considered as taken, and its Branch value (if it should or not ACTUALLY branch) is checked only on WRITE\_RESULT stage (after the execution). If the branch shouldn't have been taken, all instructions added after the BRANCH in Reorder buffer is deleted, and new instructions (directly after the instruciton position) are read, decodified and issued.
 ## Creators
-<ul>
-    <li> [Cecilia Capurucho Bouchardet](https://github.com/cecibou)</li>
-    <li> [Danielle Dias Vieira](https://github.com/DanielleDVieira)</li>
-    <li> [João Augusto dos Santos Silva](https://github.com/joaoaugustoss)</li>
-    <li> [Thiago de Campos Ribeiro Nolasco](https://github.com/Theeeccoo)</li>
-</ul>
+
+[Thiago de Campos Ribeiro Nolasco](https://github.com/Theeeccoo)
+
+[Danielle Dias Vieira](https://github.com/DanielleDVieira)
+
+[João Augusto dos Santos Silva](https://github.com/joaoaugustoss)
+
+[Cecilia Capurucho Bouchardet](https://github.com/cecibou)
 
 ## Features
 <ul>
