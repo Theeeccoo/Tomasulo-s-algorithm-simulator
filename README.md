@@ -47,6 +47,9 @@ In this project the Branch is always considered as taken, and its Branch value (
     <li> Observe the simulation results and analysis, including the processor state and execution timeline, a log file is created ("tables.txt").</li>
 </ol>
 
+## To reference
+To cite this project, use [NOLASCO, Thiago de Campos R.; VIEIRA, Danielle D.; SILVA, João Augusto S.; FREITAS, Henrique C.. Simulador do Algoritmo de Tomasulo com Conjunto de Instruções RISC-V. In: WORKSHOP DE INICIAÇÃO CIENTÍFICA - SIMPÓSIO EM SISTEMAS COMPUTACIONAIS DE ALTO DESEMPENHO (SSCAD), 24. , 2023, Porto Alegre/RS. Anais [...]. Porto Alegre: Sociedade Brasileira de Computação, 2023 . p. 1-8. DOI: https://doi.org/10.5753/wscad_estendido.2023.235759.](https://sol.sbc.org.br/index.php/sscad_estendido/article/view/26442)
+
 ## References
 <ul>
     <li> Robert Tomasulo. "An Efficient Algorithm for Exploiting Multiple Arithmetic Units." IBM Journal of Research and Development, vol. 11, no. 1, 1967, pp. 25-33.</li>
